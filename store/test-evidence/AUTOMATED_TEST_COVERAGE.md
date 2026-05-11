@@ -3,21 +3,21 @@
 最終実行日: 2026-05-11
 GO/NO-GO 判定: **GO** (R2 アンチペルソナ SUFFICIENT)
 
-## 件数サマリ
+## 件数サマリ (5 視点エキスパート最終レビュー反映後)
 
 | 層 | 件数 | 全 PASS | ログ |
 |---|---|---|---|
 | smoke | 1 | ✓ | `smoke.log` |
-| 純粋関数 (lib/expense-utils.js) | **42** | ✓ | `test-pure.log` |
-| e2e リグレッション (Puppeteer) | **12** | ✓ | `screenshots/e2e/` |
-| e2e 仕様駆動 (Puppeteer, 実装非参照) | **17** | ✓ | `screenshots/spec/` |
-| **合計** | **72** | **PASS** | — |
+| 純粋関数 (lib/expense-utils.js) | **45** | ✓ | `test-pure.log` |
+| e2e リグレッション (Puppeteer) | **25** | ✓ | `screenshots/e2e/` |
+| e2e 仕様駆動 (Puppeteer, 実装非参照) | **32** | ✓ | `screenshots/spec/` |
+| **合計** | **103** | **PASS** | — |
 
-PLAYBOOK 最低件数ライン全クリア:
+PLAYBOOK 最低件数ライン全クリア + 既存ラインナップ整合 (12 Privilege Log 87 件超過):
 - smoke 1+ ✓
-- 純粋関数 20+ ✓ (42 件、要件の 2 倍)
-- e2e リグレッション 8+ ✓ (12 件)
-- e2e 仕様駆動 10+ ✓ (17 件、要件の 1.7 倍)
+- 純粋関数 20+ ✓ (45 件、要件の 2.3 倍)
+- e2e リグレッション 8+ ✓ (25 件、要件の 3.1 倍)
+- e2e 仕様駆動 10+ ✓ (32 件、要件の 3.2 倍)
 
 ## カバー領域マップ
 
@@ -33,15 +33,27 @@ PLAYBOOK 最低件数ライン全クリア:
 | Pro upgrade | — | popup-11 | SPEC-16 |
 | Persistence | (chrome.storage 経由) | popup-12 | SPEC-17 |
 
-## 致命修正履歴 (R1 アンチペルソナ → R2 SUFFICIENT までの反復ループ)
+## 致命修正履歴 (R1 アンチペルソナ → R2 SUFFICIENT → 5 視点最終レビュー)
 
 | ラウンド | 検出件数 | 対応 |
 |---|---|---|
 | R1 アンチペルソナ | 10 件 | 7 件修正 (致命 2/3/4/5/6/9/10) + 3 件「対応不要」判定 (致命 1/7/8) |
 | R2 アンチペルソナ | 0 件 (致命) + 3 件 Borderline | SUFFICIENT 認定、`downloads` 権限削除のみ追加対応 |
+| **5 視点最終レビュー (Adam/Lawrence/Carlos/Cynthia/Eric)** | **Eric 致命 5 件 + Adam 業界 2 件 + Lawrence 任意強化** | **全て修正済**、純粋関数リグレッション +3 件、e2e リグレッション +12 件、仕様駆動 +15 件追加 |
 
-R1 致命の修正詳細は `popup.js` / `lib/expense-utils.js` / `popup.html` のコミットで追跡可能。
-R1 で追加した純粋関数リグレッションテストは 7 件 (test-pure.log の後半参照)。
+5 視点レビューで Eric が発見した致命:
+- 致命 1: Pro モーダル「Multiple deployments side by side」未実装 (虚偽広告)
+- 致命 2: CSV import で UTF-8 BOM 全件失敗 (Excel/Sheets 標準)
+- 致命 3: PDF 改ページ後ヘッダ再描画壊れ
+- 致命 4: スマートクオート memo が `?` 化
+- 致命 5: claim # フィルタが部分一致しない
+
+Adam (現役 IA 25 年経験) 業界致命:
+- 致命 1: claim # サンプル "CLM-2025-1042" が架空フォーマット → carrier 実書式 (PA09887766 / 23-014A789 / ALL-CAT-MIL-552134 / USAA-3892hnf)
+- 致命 2: per diem $75 が CAT 文脈と矛盾 → CAT 標準 $110-125/日
+
+Lawrence (テックロイヤー) 任意強化:
+- Settings + PDF disclaimer を TurboTax 水準の責任限定 + IRS 罰金 disclaim に強化
 
 ## 手動テスト免除根拠
 

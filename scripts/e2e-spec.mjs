@@ -27,7 +27,7 @@
 import puppeteer from 'puppeteer';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { mkdtempSync, rmSync, mkdirSync, existsSync, readdirSync, readFileSync } from 'fs';
+import { mkdtempSync, rmSync, mkdirSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -897,6 +897,433 @@ await spec('17', 'Persistence: saved expense survives popup reload', async () =>
   assert(hasAmt, 'saved amount $37.42 should be visible after reload');
   const hasClaim = await pageHasText(page, 'PERSIST-1');
   assert(hasClaim, 'saved claim PERSIST-1 should be visible after reload');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-18  §"Adding an expense": Date 欄が今日の日付で初期化されている
+// ====================================================================
+await spec('18', 'Date field defaults to today on form open', async () => {
+  const page = await launchPage(browser, extensionId);
+  await openAddForm(page);
+  await snap(page, 'spec-18-date-default');
+  // type=date input の value を取得（"YYYY-MM-DD" 形式）。可視のもの限定
+  const dateVal = await page.evaluate((isVisSrc) => {
+    const isVis = eval(isVisSrc);
+    const inputs = Array.from(document.querySelectorAll('input[type=date]'));
+    const cand = inputs.find(i => isVis(i));
+    return cand ? cand.value : null;
+  }, isVisibleScript());
+  assert(dateVal, 'visible date input must have a default value (USER_SPEC: "defaults to today\'s date")');
+  // 今日の YYYY-MM-DD（ローカル）と比較
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, '0');
+  const d = String(today.getDate()).padStart(2, '0');
+  const expected = `${y}-${m}-${d}`;
+  assertEq(dateVal, expected, `Date field must default to today (${expected})`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-19  §"Adding an expense": Category select に 8 つのオプションが揃っている
+// ====================================================================
+await spec('19', 'Category select contains all 8 spec options', async () => {
+  const page = await launchPage(browser, extensionId);
+  await openAddForm(page);
+  await snap(page, 'spec-19-category-options');
+  const required = ['per diem', 'hotel', 'mileage', 'meals', 'parking', 'supplies', 'phone', 'other'];
+  const missing = await page.evaluate((reqList) => {
+    const norm = (s) => (s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    const selects = Array.from(document.querySelectorAll('select'));
+    for (const s of selects) {
+      const opts = Array.from(s.options).map(o => norm(o.textContent));
+      const hits = reqList.filter(r => opts.includes(r));
+      if (hits.length >= 8) return [];
+      if (hits.length >= 3) return reqList.filter(r => !opts.includes(r));
+    }
+    return reqList; // 該当 select が無ければ全項目欠落扱い
+  }, required);
+  assertEq(missing.length, 0,
+    `Category select must contain all 8 options. Missing: ${missing.join(', ')}`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-20  §"Adding an expense": Cancel 後に Save → 新しい入力で再開できる
+// ====================================================================
+await spec('20', 'After Cancel, re-opening form allows a fresh Save', async () => {
+  const page = await launchPage(browser, extensionId);
+  // 一度 Cancel
+  await openAddForm(page);
+  await setFieldByLabel(page, 'amount', '888');
+  await setFieldByLabel(page, 'claim', 'STALE');
+  await clickByText(page, 'cancel', { exact: true });
+  await page.waitForFunction(`!(${formOpenScript()})`, { timeout: 2000 }).catch(() => {});
+  // 再オープン → 別データで Save
+  await addExpense(page, {
+    date: '2026-05-10', category: 'Meals', amount: '25.50', claim: 'FRESH', memo: 'lunch',
+  });
+  await snap(page, 'spec-20-fresh-save');
+  const rows = await countExpenseRows(page);
+  assertEq(rows, 1, 'after Cancel + new Save, list must contain exactly 1 row (only the fresh one)');
+  // 破棄したデータ (STALE/888) が見えていないこと
+  const visible = await getVisibleText(page);
+  assert(!/STALE/i.test(visible), 'discarded Cancel data must not appear');
+  assert(/FRESH/i.test(visible), 'fresh saved data must appear');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-21  §"Totals": 1 件で "1 entry"、複数件で "N entries"
+// ====================================================================
+await spec('21', 'Entry count text: "1 entry" singular, "N entries" plural', async () => {
+  const page = await launchPage(browser, extensionId);
+  // 1 件
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '10', claim: 'C-1', memo: '' });
+  await snap(page, 'spec-21-singular');
+  const visible1 = await getVisibleText(page);
+  assert(/\b1\s+entry\b/i.test(visible1) && !/\b1\s+entries\b/i.test(visible1),
+    `singular form "1 entry" expected. Visible: ${visible1.substring(0, 200)}`);
+  // 2 件目
+  await addExpense(page, { date: '2026-05-11', category: 'Meals', amount: '5', claim: 'C-2', memo: '' });
+  // 3 件目
+  await addExpense(page, { date: '2026-05-12', category: 'Phone', amount: '3', claim: 'C-3', memo: '' });
+  await snap(page, 'spec-21-plural');
+  const visibleN = await getVisibleText(page);
+  assert(/\b3\s+entries\b/i.test(visibleN),
+    `plural form "3 entries" expected. Visible: ${visibleN.substring(0, 200)}`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-22  §"Totals": 金額は thousands separator + 小数 2 桁 (例: $1,234.50)
+// ====================================================================
+await spec('22', 'Totals amount uses comma thousands separator and 2 decimals', async () => {
+  const page = await launchPage(browser, extensionId);
+  // 合計が 1000 を超えるエントリを追加（USER_SPEC 例: $1,234.50）
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '1234.50', claim: 'T-1', memo: '' });
+  await snap(page, 'spec-22-formatted-totals');
+  const totals = await readTotalsAmount(page);
+  assert(totals, 'totals amount string must be present');
+  // 厳密形式: $1,234.50
+  assert(/^\$1,234\.50$/.test(totals),
+    `totals must be formatted with thousands separator and 2 decimals as "$1,234.50", got "${totals}"`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-23  §"The expense list": 一覧は newest-first 順
+// ====================================================================
+await spec('23', 'Expense list is sorted newest-first by date', async () => {
+  const page = await launchPage(browser, extensionId);
+  // 意図的に古い日付から順に Save し、表示順が新しい順になることを確認
+  await addExpense(page, { date: '2026-05-01', category: 'Hotel', amount: '1', claim: 'OLDEST', memo: '' });
+  await addExpense(page, { date: '2026-05-15', category: 'Meals', amount: '2', claim: 'NEWEST', memo: '' });
+  await addExpense(page, { date: '2026-05-08', category: 'Phone', amount: '3', claim: 'MIDDLE', memo: '' });
+  await snap(page, 'spec-23-newest-first');
+  // 画面上の出現順を取得し、NEWEST → MIDDLE → OLDEST であること
+  const order = await page.evaluate(() => {
+    const text = document.body.innerText || '';
+    const labels = ['NEWEST', 'MIDDLE', 'OLDEST'];
+    return labels.map(l => ({ l, idx: text.indexOf(l) })).filter(o => o.idx >= 0);
+  });
+  assertEq(order.length, 3, 'all three labels must be visible in the list');
+  const labelsByPos = order.sort((a, b) => a.idx - b.idx).map(o => o.l);
+  assert(
+    labelsByPos[0] === 'NEWEST' && labelsByPos[1] === 'MIDDLE' && labelsByPos[2] === 'OLDEST',
+    `list must be sorted newest-first. Order seen: ${labelsByPos.join(' → ')}`
+  );
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-24  §"Filter": From/To 日付範囲は inclusive
+// ====================================================================
+await spec('24', 'Filter From/To date range is inclusive on both ends', async () => {
+  const page = await launchPage(browser, extensionId);
+  // 5/01, 5/05, 5/10, 5/15 の 4 件を投入
+  await addExpense(page, { date: '2026-05-01', category: 'Hotel', amount: '11', claim: 'D-01', memo: '' });
+  await addExpense(page, { date: '2026-05-05', category: 'Hotel', amount: '12', claim: 'D-05', memo: '' });
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '13', claim: 'D-10', memo: '' });
+  await addExpense(page, { date: '2026-05-15', category: 'Hotel', amount: '14', claim: 'D-15', memo: '' });
+  assertEq(await countExpenseRows(page), 4, 'should have 4 rows baseline');
+  // Filter From=2026-05-05, To=2026-05-10 → 5/05 と 5/10 を含めて 2 件
+  await clickByText(page, 'filter');
+  await new Promise(r => setTimeout(r, 200));
+  await setFieldByLabel(page, 'from', '2026-05-05');
+  await setFieldByLabel(page, 'to', '2026-05-10');
+  await clickByText(page, 'apply');
+  await new Promise(r => setTimeout(r, 300));
+  await snap(page, 'spec-24-inclusive');
+  const rows = await countExpenseRows(page);
+  assertEq(rows, 2, 'inclusive From=05-05 To=05-10 must yield exactly 2 rows (05-05 and 05-10)');
+  // 画面上に "D-05" と "D-10" が見える、"D-01" / "D-15" は見えない
+  const txt = await getVisibleText(page);
+  assert(/D-05/.test(txt) && /D-10/.test(txt),
+    'both boundary-date entries (D-05, D-10) must be visible — inclusive on both ends');
+  assert(!/D-01/.test(txt) && !/D-15/.test(txt),
+    'entries outside the inclusive range must be hidden');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-25  §"Filter": 複数条件 (claim + category + date range) AND 適用
+// ====================================================================
+await spec('25', 'Filter combines claim + category + date range with AND logic', async () => {
+  const page = await launchPage(browser, extensionId);
+  // 同じ claim "X-1" で category Hotel と Meals、別 claim "Y-2" Hotel
+  await addExpense(page, { date: '2026-05-05', category: 'Hotel', amount: '100', claim: 'X-1', memo: 'a' });
+  await addExpense(page, { date: '2026-05-07', category: 'Meals', amount: '20', claim: 'X-1', memo: 'b' });
+  await addExpense(page, { date: '2026-05-09', category: 'Hotel', amount: '30', claim: 'Y-2', memo: 'c' });
+  await addExpense(page, { date: '2026-05-20', category: 'Hotel', amount: '40', claim: 'X-1', memo: 'd' });
+  assertEq(await countExpenseRows(page), 4, 'baseline 4 rows');
+  // Filter: claim=X-1, category=Hotel, From=2026-05-01, To=2026-05-10
+  await clickByText(page, 'filter');
+  await new Promise(r => setTimeout(r, 200));
+  await setFieldByLabel(page, 'claim', 'X-1');
+  await setFieldByLabel(page, 'category', 'Hotel');
+  await setFieldByLabel(page, 'from', '2026-05-01');
+  await setFieldByLabel(page, 'to', '2026-05-10');
+  await clickByText(page, 'apply');
+  await new Promise(r => setTimeout(r, 300));
+  await snap(page, 'spec-25-multi-filter');
+  const rows = await countExpenseRows(page);
+  // ヒットすべきは 5/05 Hotel X-1 のみ (Meals は category 不一致、5/20 は範囲外、Y-2 は claim 不一致)
+  assertEq(rows, 1, 'AND-filter (claim=X-1 AND category=Hotel AND date 05-01..05-10) must yield exactly 1 row');
+  const filteredTotals = await readTotalsAmount(page);
+  const num = parseFloat((filteredTotals || '0').replace(/[$,]/g, ''));
+  assertEq(num, 100, 'filtered totals should be $100 (only the 5/05 Hotel X-1 entry)');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-26  §"Export & Import": CSV ファイル名形式 adjuster-expenses_<slug>_<YYYY-MM-DD>.csv
+// ====================================================================
+await spec('26', 'CSV download filename format adjuster-expenses_<slug>_<YYYY-MM-DD>.csv', async () => {
+  const page = await launchPage(browser, extensionId);
+  await configureDownloads(page);
+  // deployment を Hurricane Alpha に設定 → slug は "hurricane-alpha" 系を期待
+  await clickByText(page, 'edit');
+  await setFieldByLabel(page, 'adjuster', 'Jane Doe');
+  try { await setFieldByLabel(page, 'event', 'Hurricane Alpha'); }
+  catch { await setFieldByLabel(page, 'cat', 'Hurricane Alpha'); }
+  await setFieldByLabel(page, 'start', '2026-05-01');
+  await setFieldByLabel(page, 'end', '2026-05-15');
+  await clickByText(page, 'save', { exact: true });
+  await page.waitForFunction(() => /hurricane alpha/i.test(document.body.innerText || ''), { timeout: 4000 });
+
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '60', claim: 'F-1', memo: '' });
+
+  const before = new Set(readdirSync(dlDir));
+  await clickByText(page, 'export csv');
+  let csvFile = null;
+  for (let i = 0; i < 60; i++) {
+    await new Promise(r => setTimeout(r, 100));
+    const files = readdirSync(dlDir).filter(f => !before.has(f) && f.toLowerCase().endsWith('.csv'));
+    if (files.length > 0) { csvFile = files[0]; break; }
+  }
+  assert(csvFile, 'CSV file must be downloaded');
+  await snap(page, 'spec-26-filename');
+  // 期待形式 (今日の日付): adjuster-expenses_<slug>_YYYY-MM-DD.csv
+  // USER_SPEC は <event-slug> としか書いていないため、slug は "Hurricane" と "Alpha" を
+  // 英数字+セパレータ (ハイフン or アンダースコア or 連結) で繋いだものを許容する。
+  // 大文字小文字も問わない。日付は YYYY-MM-DD 固定。
+  const t = new Date();
+  const y = t.getFullYear();
+  const mo = String(t.getMonth() + 1).padStart(2, '0');
+  const d = String(t.getDate()).padStart(2, '0');
+  const today = `${y}-${mo}-${d}`;
+  // adjuster-expenses_<hurricane と alpha が任意の区切りで連なる>_<today>.csv
+  const pattern = new RegExp(`^adjuster-expenses_hurricane[-_ ]?alpha_${today}\\.csv$`, 'i');
+  assert(pattern.test(csvFile),
+    `CSV filename must match "adjuster-expenses_<event-slug>_${today}.csv" (slug derived from event name "Hurricane Alpha"), got "${csvFile}"`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-27  §"Deployment information": Deployment values persist across popup re-opens
+// (Note: USER_SPEC §"Export & Import" の JSON Import 経路は popup の input[type=file]
+//  が Chrome 拡張 popup + Puppeteer 環境で操作不能なため、ここでは
+//  Persistence サブ仕様の "deployment 永続化" を別途検証する。
+//  Import 経路はリグレッション側 e2e.mjs でカバー範囲。)
+// ====================================================================
+await spec('27', 'Deployment values persist across popup re-opens', async () => {
+  const page = await launchPage(browser, extensionId);
+  // Edit で deployment を保存
+  await clickByText(page, 'edit');
+  await setFieldByLabel(page, 'adjuster', 'Persisted Adjuster');
+  try { await setFieldByLabel(page, 'event', 'Persisted Event Gamma'); }
+  catch { await setFieldByLabel(page, 'cat', 'Persisted Event Gamma'); }
+  await setFieldByLabel(page, 'start', '2026-06-01');
+  await setFieldByLabel(page, 'end', '2026-06-30');
+  await clickByText(page, 'save', { exact: true });
+  await page.waitForFunction(
+    () => /persisted event gamma/i.test(document.body.innerText || ''),
+    { timeout: 4000 }
+  );
+  await page.close();
+
+  // 新たに popup を「開き直す」= chrome-extension://<id>/popup.html を新規 page で開く
+  const reopen = await browser.newPage();
+  reopen.on('pageerror', (err) => console.log(`    [pageerror] ${err.message}`));
+  await reopen.goto(`chrome-extension://${extensionId}/popup.html`);
+  await reopen.waitForFunction(
+    () => document.body && document.body.innerText && document.body.innerText.length > 0,
+    { timeout: 5000 }
+  );
+  await snap(reopen, 'spec-27-deployment-persist');
+  const txt = await getVisibleText(reopen);
+  assert(/persisted event gamma/i.test(txt),
+    `deployment event name must survive popup re-open. Visible: ${txt.substring(0, 300)}`);
+  assert(/2026-06-01/i.test(txt) && /2026-06-30/i.test(txt),
+    'deployment date range must survive popup re-open');
+  await reopen.close();
+});
+
+// ====================================================================
+// SPEC-28  §"The expense list": 空のとき "No expenses yet" メッセージが表示される
+// ====================================================================
+await spec('28', 'Empty list shows "No expenses yet" message', async () => {
+  const page = await launchPage(browser, extensionId);
+  await snap(page, 'spec-28-empty-message');
+  // USER_SPEC: "No expenses yet. Tap + Add expense to log your first one."
+  const hasMsg = await pageHasText(page, 'No expenses yet');
+  assert(hasMsg,
+    'when list is empty, "No expenses yet" message must replace the list (USER_SPEC §The expense list)');
+  // 1 件追加すると消える
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '10', claim: 'E-1', memo: '' });
+  const stillHasMsg = await pageHasText(page, 'No expenses yet');
+  assert(!stillHasMsg,
+    '"No expenses yet" message must disappear once an expense is added');
+  // 削除して再び空にすると復活
+  await page.evaluate(() => {
+    const btns = Array.from(document.querySelectorAll('button,a,[role="button"]'));
+    const x = btns.find(b => /^\s*[×✕xX]\s*$/.test(b.textContent || ''));
+    if (x) x.click();
+  });
+  await new Promise(r => setTimeout(r, 250));
+  const confirmText = await getVisibleText(page);
+  if (/are you sure|confirm|delete\?/i.test(confirmText)) {
+    try { await clickByText(page, 'delete'); }
+    catch { try { await clickByText(page, 'yes'); } catch { await clickByText(page, 'ok'); } }
+    await new Promise(r => setTimeout(r, 250));
+  }
+  await snap(page, 'spec-28-empty-again');
+  const hasMsgAgain = await pageHasText(page, 'No expenses yet');
+  assert(hasMsgAgain,
+    '"No expenses yet" message must re-appear after the last expense is deleted');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-29  §"Mileage amount auto-calc": Amount=0 明示入力 + Miles>0 → auto-calc 発動
+// ====================================================================
+await spec('29', 'Mileage auto-calc fires when Amount is explicitly 0 (not just empty)', async () => {
+  const page = await launchPage(browser, extensionId);
+  await openAddForm(page);
+  await setFieldByLabel(page, 'category', 'Mileage');
+  await waitForMilesVisible(page);
+  // Amount は明示的に "0" を入力
+  await setFieldByLabel(page, 'amount', '0');
+  await setFieldByLabel(page, 'miles', '50');
+  await setFieldByLabel(page, 'claim', 'AMT-ZERO');
+  await clickByText(page, 'save', { exact: true });
+  await new Promise(r => setTimeout(r, 500));
+  await snap(page, 'spec-29-amount-zero-autocalc');
+  const totals = await readTotalsAmount(page);
+  const num = parseFloat((totals || '0').replace(/[$,]/g, ''));
+  // 50 miles × 0.725 = 36.25
+  assert(Math.abs(num - 36.25) < 0.01,
+    `Amount=0 + Miles=50 with default rate 0.725 must auto-calc to $36.25, got "${totals}" (${num})`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-30  §"Pro upgrade": Upgrade モーダルが "$12.99 one-time" を含む
+// ====================================================================
+await spec('30', 'Upgrade modal title "Unlock Pro" and price "$12.99 one-time"', async () => {
+  const page = await launchPage(browser, extensionId);
+  // Free 状態で Export PDF を押すと Upgrade Modal が出る (SPEC-15 と同じ経路)
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '10', claim: 'U-1', memo: '' });
+  await clickByText(page, 'export pdf');
+  await new Promise(r => setTimeout(r, 600));
+  await snap(page, 'spec-30-upgrade-modal-content');
+  // タイトル "Unlock Pro"
+  const hasTitle = await pageHasText(page, 'Unlock Pro');
+  assert(hasTitle, 'Upgrade modal must display title "Unlock Pro"');
+  // 価格と "one-time" 表記
+  const hasPrice = await pageHasText(page, '$12.99');
+  assert(hasPrice, 'Upgrade modal must display "$12.99" price');
+  const hasOneTime = await pageHasText(page, 'one-time');
+  assert(hasOneTime, 'Upgrade modal must display "one-time" wording (USER_SPEC §Pro upgrade)');
+  // Pro 機能リストの代表項目（USER_SPEC: Unlimited expenses, PDF report 等）
+  const txt = await getVisibleText(page);
+  assert(/unlimited/i.test(txt),
+    `Upgrade modal should list "Unlimited expenses" feature. Visible: ${txt.substring(0, 400)}`);
+  assert(/pdf/i.test(txt),
+    `Upgrade modal should list "PDF report" feature. Visible: ${txt.substring(0, 400)}`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-31  §"Pro upgrade": "Maybe later" で modal が閉じ、プラン状態は Free のまま
+// ====================================================================
+await spec('31', '"Maybe later" closes Upgrade modal without changing plan state', async () => {
+  const page = await launchPage(browser, extensionId);
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '10', claim: 'M-1', memo: '' });
+  await clickByText(page, 'export pdf');
+  await new Promise(r => setTimeout(r, 600));
+  // モーダル可視を確認
+  const open = await pageHasText(page, 'Unlock Pro');
+  assert(open, 'Upgrade modal must be open before clicking Maybe later');
+  await clickByText(page, 'maybe later');
+  await new Promise(r => setTimeout(r, 400));
+  await snap(page, 'spec-31-maybe-later-closed');
+  // モーダルが閉じている: "Unlock Pro" タイトルテキストが見える要素が無いこと
+  const stillOpen = await page.evaluate(() => {
+    const norm = (s) => (s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    const els = Array.from(document.querySelectorAll('*'));
+    return els.some(el => {
+      if (el.children.length > 0) return false;
+      if (!norm(el.textContent).includes('unlock pro')) return false;
+      const cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+      if (el.offsetParent === null && cs.position !== 'fixed') return false;
+      return true;
+    });
+  });
+  assert(!stillOpen, 'Upgrade modal must be closed after clicking "Maybe later"');
+  // フッターが依然として "Free · N/30" を表示 (Pro へ移行していない)
+  const txt = await getVisibleText(page);
+  assert(/free\s*[·\-•|]\s*\d+\s*\/\s*30/i.test(txt),
+    `footer must still show Free quota after Maybe later. Visible: ${txt.substring(0, 300)}`);
+  assert(!/pro\s*[·\-•|]\s*unlimited/i.test(txt),
+    'plan must NOT switch to Pro after Maybe later');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-32  §"Permissions used": manifest.json は "storage" のみを permissions に持つ
+// ====================================================================
+await spec('32', 'manifest.json declares only "storage" in permissions', async () => {
+  // manifest を chrome-extension URL から fetch して内容検証 (実装ファイルでなくマニフェスト)
+  const page = await launchPage(browser, extensionId);
+  const manifest = await page.evaluate(async (extId) => {
+    const res = await fetch(`chrome-extension://${extId}/manifest.json`);
+    return res.json();
+  }, extensionId);
+  await snap(page, 'spec-32-manifest');
+  assert(Array.isArray(manifest.permissions), 'manifest.permissions must be an array');
+  assertEq(manifest.permissions.length, 1, `permissions array must contain exactly 1 entry; got ${JSON.stringify(manifest.permissions)}`);
+  assertEq(manifest.permissions[0], 'storage', 'permissions[0] must be "storage" (USER_SPEC §Permissions used)');
+  // host_permissions は USER_SPEC では "https://extensionpay.com/*" のみ許容 (もしくは無し)
+  if (manifest.host_permissions) {
+    for (const h of manifest.host_permissions) {
+      assert(/extensionpay\.com/i.test(h),
+        `host_permissions must be limited to extensionpay.com per USER_SPEC §Permissions used; got "${h}"`);
+    }
+  }
   await page.close();
 });
 
