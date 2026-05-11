@@ -39,13 +39,15 @@ const promoSmallSvg = `
   </defs>
   <rect x="0" y="0" width="440" height="280" fill="url(#bg)"/>
 
-  <!-- 主見出し: IA Expense Logger の核訴求 -->
-  <text x="220" y="86" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="46" font-weight="900" fill="#fff" letter-spacing="-1">CAT-ready.</text>
-  <text x="220" y="146" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="52" font-weight="900" letter-spacing="-1" xml:space="preserve"><tspan fill="#FF6B4A">No </tspan><tspan fill="#fff">Subscription.</tspan></text>
+  <!-- 主見出し: No Subscription を主軸、CAT-ready をサブ移動 (Jessica 提案) -->
+  <text x="220" y="92" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="48" font-weight="900" letter-spacing="-1.2" xml:space="preserve"><tspan fill="#FF6B4A">No </tspan><tspan fill="#fff">Subscription.</tspan></text>
 
-  <!-- 補助コピー -->
-  <text x="220" y="188" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="19" font-weight="700" fill="#93C5FD" letter-spacing="0.3">Per diem, mileage, hotels — done.</text>
-  <text x="220" y="216" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#cbd5e1" letter-spacing="0.3">For independent insurance adjusters.</text>
+  <!-- ターゲット明示: 24pt 以上に拡大 (Jessica 修正必須項目) -->
+  <text x="220" y="140" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="800" fill="#fff" letter-spacing="0.2">For insurance adjusters.</text>
+
+  <!-- サブコピー: 業界用語と機能列挙 -->
+  <text x="220" y="184" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#93C5FD" letter-spacing="0.3">Per diem · Mileage · Hotels.</text>
+  <text x="220" y="222" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#cbd5e1" letter-spacing="0.3">CAT-ready. Buy once, use forever.</text>
 </svg>`;
 
 writeFileSync(join(outDir, 'promo-small-440x280.svg'), promoSmallSvg);
@@ -67,12 +69,18 @@ console.log('Generated store/promo-small-440x280.png + .svg');
 //   'popup'      = 左上 380x500 を抽出して 1.3倍拡大 (popup単体表示時)
 //   'fullscreen' = 800x700 全体を縮小 (popup を覆うモーダル等を撮影した時)
 const targets = [
-  // e2e で撮影したスクショから 5枚を選定（機能 → 課金順）
-  { src: '02-one-expense.png',     caption: 'One screen. Every claim, every category.',          mode: 'popup' },
-  { src: '03-filter-applied.png',  caption: 'Filter by claim or category — instant totals.',     mode: 'popup' },
-  { src: '04-deployment-saved.png', caption: 'Track every CAT deployment from one header.',       mode: 'popup' },
-  { src: '01-popup-loaded.png',    caption: 'Per diem, hotel, mileage with IRS rate auto-calc.', mode: 'popup' },
-  { src: '05-free-cap-upgrade.png', caption: '$12.99 once. Yours forever. No subscription.',      mode: 'fullscreen' }
+  // e2e で撮影した実出力から 5 枚を選定（機能 → 課金順、リッチデータ重視）
+  // shot 連番は e2e.mjs のテスト順序に依存。popup-6 (Mileage form shot) を追加したため後続が +1 ずれる。
+  // 1 枚目: $1,000+ / 15 entries の使い込まれた感
+  { src: '04-rich-overview.png',          caption: '15 expenses, every claim, every category.',           mode: 'popup' },
+  // 2 枚目: claim# フィルタで瞬時に小計
+  { src: '06-rich-filtered-claim.png',    caption: 'Filter by claim — instant subtotal per file.',       mode: 'popup' },
+  // 3 枚目: deployment 編集モーダル (CAT 名+期間+adjuster を一度で設定)
+  { src: '05-rich-deployment-modal.png',  caption: 'One deployment header for every claim — CAT-ready.', mode: 'fullscreen' },
+  // 4 枚目: Mileage カテゴリのみ表示、IRS $0.725/mi で自動計算された実金額が並ぶ
+  { src: '07-rich-mileage-only.png',      caption: 'Mileage logs auto-fill at IRS $0.725/mi.',           mode: 'popup' },
+  // 5 枚目: 課金モーダル
+  { src: '10-free-cap-upgrade.png',       caption: '$12.99 once. Yours forever. No subscription.',       mode: 'fullscreen' }
 ];
 
 const screenshotsDir = join(root, 'screenshots');

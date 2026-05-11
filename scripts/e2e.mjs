@@ -182,9 +182,67 @@ await run('popup-5: Category = mileage で Miles 欄が出現', async () => {
 
 await run('popup-6: Mileage 自動計算 (miles=100, default 0.725 → $72.50)', async () => {
   const page = await freshPopup(browser, extensionId);
-  await fillAndSave(page, { category: 'mileage', miles: 100, claim: 'C-1', memo: 'Site visit' });
+  // Save する前のフォーム中の状態を撮影 (ストアスクショ用に "計算が起きている瞬間")
+  await page.click('#btn-toggle-add');
+  await page.waitForSelector('#form-fields:not(.hidden)');
+  await page.select('#f-category', 'mileage');
+  await new Promise(r => setTimeout(r, 50));
+  await page.$eval('#f-miles', (el, v) => { el.value = String(v); el.dispatchEvent(new Event('input', { bubbles: true })); }, 100);
+  await page.$eval('#f-claim', (el, v) => { el.value = v; }, 'CLM-2026-0042');
+  await page.$eval('#f-memo', (el, v) => { el.value = v; }, 'Site visit · IRS $0.725/mi');
+  await shot(page, 'mileage-auto-calc-form');
+  await page.click('#btn-save-add');
+  await new Promise(r => setTimeout(r, 100));
   const amount = await page.$eval('.expense-item .amount', el => el.textContent);
   if (!/\$72\.50/.test(amount)) throw new Error('自動計算結果が違う: ' + amount);
+  await page.close();
+});
+
+await run('popup-rich: リッチデータ (15 件) でスクショ撮影', async () => {
+  // ストアアセット 1 枚目用に "使い込まれた感" のあるスクショを撮る
+  const richSeeds = [
+    { id: 'r1',  date: '2025-09-26', claim: 'CLM-2025-1042', category: 'per_diem', amount: 75, miles: null, memo: 'Day 1 — staging' },
+    { id: 'r2',  date: '2025-09-26', claim: 'CLM-2025-1042', category: 'hotel',    amount: 142.5, miles: null, memo: 'Marriott Tampa' },
+    { id: 'r3',  date: '2025-09-26', claim: 'CLM-2025-1042', category: 'mileage',  amount: 67.86, miles: 93.6, memo: 'Site visit' },
+    { id: 'r4',  date: '2025-09-27', claim: 'CLM-2025-1042', category: 'per_diem', amount: 75, miles: null, memo: 'Day 2' },
+    { id: 'r5',  date: '2025-09-27', claim: 'CLM-2025-1043', category: 'mileage',  amount: 95.14, miles: 131.2, memo: 'Roof inspection' },
+    { id: 'r6',  date: '2025-09-27', claim: 'CLM-2025-1043', category: 'meals',    amount: 32.45, miles: null, memo: 'Dinner with insured' },
+    { id: 'r7',  date: '2025-09-28', claim: 'CLM-2025-1044', category: 'per_diem', amount: 75, miles: null, memo: 'Day 3' },
+    { id: 'r8',  date: '2025-09-28', claim: 'CLM-2025-1044', category: 'hotel',    amount: 142.5, miles: null, memo: 'Marriott Tampa' },
+    { id: 'r9',  date: '2025-09-28', claim: 'CLM-2025-1044', category: 'parking',  amount: 18, miles: null, memo: 'Downtown garage' },
+    { id: 'r10', date: '2025-09-29', claim: 'CLM-2025-1045', category: 'mileage',  amount: 102.95, miles: 142.0, memo: 'Cross-county drive' },
+    { id: 'r11', date: '2025-09-29', claim: 'CLM-2025-1045', category: 'supplies', amount: 24.87, miles: null, memo: 'Tape, gloves, batteries' },
+    { id: 'r12', date: '2025-09-30', claim: 'CLM-2025-1046', category: 'per_diem', amount: 75, miles: null, memo: 'Day 5' },
+    { id: 'r13', date: '2025-09-30', claim: 'CLM-2025-1046', category: 'mileage',  amount: 58.72, miles: 81.0, memo: 'Site recheck' },
+    { id: 'r14', date: '2025-10-01', claim: 'CLM-2025-1047', category: 'phone',    amount: 12, miles: null, memo: 'Verizon weekly' },
+    { id: 'r15', date: '2025-10-01', claim: 'CLM-2025-1047', category: 'per_diem', amount: 75, miles: null, memo: 'Day 6' }
+  ];
+  const deployment = { name: 'Frank Riley', event: 'Hurricane Helene 2025', start: '2025-09-26', end: '2025-10-15' };
+  const page = await freshPopup(browser, extensionId, { preload: { expenses: richSeeds, deployment } });
+  await new Promise(r => setTimeout(r, 80));
+  await shot(page, 'rich-overview');
+  // スクリーンショット 3 (deployment 編集モーダル訴求) 用: リッチデータ背景 + 編集モーダル開いた状態
+  await page.click('#btn-edit-deployment');
+  await page.waitForSelector('#deployment-modal:not(.hidden)');
+  await new Promise(r => setTimeout(r, 80));
+  await shot(page, 'rich-deployment-modal');
+  await page.click('#btn-deployment-cancel');
+  await new Promise(r => setTimeout(r, 50));
+  // フィルタ後のスクショも撮る (CLM-2025-1042 で絞り込み)
+  await page.click('#btn-filter');
+  await page.waitForSelector('#filter-modal:not(.hidden)');
+  await page.$eval('#flt-claim', (el, v) => { el.value = v; }, 'CLM-2025-1042');
+  await page.click('#btn-filter-apply');
+  await new Promise(r => setTimeout(r, 80));
+  await shot(page, 'rich-filtered-claim');
+  // Mileage カテゴリフィルタ shot (スクショ 4 用: IRS auto-calc の実数値が見える)
+  await page.click('#btn-filter');
+  await page.waitForSelector('#filter-modal:not(.hidden)');
+  await page.$eval('#flt-claim', (el, v) => { el.value = v; }, '');
+  await page.select('#flt-category', 'mileage');
+  await page.click('#btn-filter-apply');
+  await new Promise(r => setTimeout(r, 80));
+  await shot(page, 'rich-mileage-only');
   await page.close();
 });
 
