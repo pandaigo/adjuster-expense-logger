@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Adjuster Expense Logger</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      color: #1a1a2e;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    h2 { font-size: 18px; margin-top: 32px; margin-bottom: 8px; }
+    .updated { color: #888; font-size: 14px; margin-bottom: 32px; }
+    ul { padding-left: 24px; }
+    li { margin-bottom: 6px; }
+    a { color: #4a90d9; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: 2026-05-11</p>
+
+  <p><strong>Adjuster Expense Logger</strong> ("the Extension") is a Chrome browser extension that helps independent insurance adjusters log per-claim deployment expenses (per diem, hotel, mileage, meals, parking, supplies, phone, other) and export them as CSV or PDF for IA company billing and personal tax records.</p>
+
+  <h2>Data Collection</h2>
+  <p>The Extension does <strong>not</strong> collect, transmit, or share any personal data. Specifically:</p>
+  <ul>
+    <li>No data is sent to any external server.</li>
+    <li>No analytics, tracking, or telemetry is included.</li>
+    <li>No user accounts are required.</li>
+    <li>No cookies are set by the Extension.</li>
+  </ul>
+
+  <h2>Data Storage</h2>
+  <p>All expense entries, deployment information (adjuster name, CAT event, start / end dates), Pro purchase status, and the IRS mileage rate preference are stored locally on the user's device using the Chrome Storage API (<code>chrome.storage.local</code>). This data never leaves the device unless the user manually exports it as a CSV / PDF / JSON file.</p>
+
+  <h2>Permissions</h2>
+  <p>The Extension requests the following permissions:</p>
+  <ul>
+    <li><strong>storage</strong> — To save expense entries, deployment details, and preferences locally on the device.</li>
+  </ul>
+
+  <h2>Third-Party Services</h2>
+  <p>The Extension uses <strong>ExtensionPay</strong> (extensionpay.com) to process one-time payments and verify purchase status. When a user upgrades to the Pro version, payment is handled by ExtensionPay via Stripe. Only purchase status (paid / unpaid) is shared with the Extension. No expense entries, claim numbers, deployment data, or other adjuster information is shared with ExtensionPay, Stripe, or any other third party.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>If this policy is updated, the changes will be posted on this page with an updated date.</p>
+
+  <h2>Contact</h2>
+  <p>If you have questions about this privacy policy, please contact us at: <a href="mailto:microforge.hq@gmail.com">microforge.hq@gmail.com</a></p>
+</body>
+</html>

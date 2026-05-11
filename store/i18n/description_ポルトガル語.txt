@@ -1,0 +1,27 @@
+Pare de perder horas formatando Excel para faturamento IA.
+
+Adjuster Expense Logger mantém cada per diem, diária de hotel, viagem de milhagem, refeição, taxa de estacionamento e compra de suprimentos organizada por número de sinistro — pronta para exportar como CSV para a fatura da empresa IA ou declaração de imposto Schedule C.
+
+Feito para ajustadores de seguros independentes que se deslocam em CAT (furacões, granizo, geadas, incêndios florestais) e gerenciam vários sinistros por dia.
+
+✔ Registre per diem, hotel, milhagem (cálculo automático da taxa IRS), refeições, estacionamento, suprimentos, telefone, outros
+✔ Etiquete cada despesa com um # de sinistro — totais instantâneos por sinistro ou categoria
+✔ Filtre por sinistro / categoria / período de datas
+✔ Exportação CSV pronta para faturamento IA ou repasse ao contador
+✔ Backup JSON para troca de dispositivos
+✔ Cabeçalho de deslocamento (nome do ajustador, evento CAT, datas de início/fim) incluído em toda exportação
+
+Plano Gratuito:
+• Registre até 30 despesas
+• Importação e exportação CSV / JSON — seus dados são sempre seus
+
+Plano Pro (US$ 12,99 pagamento único, sem assinatura):
+• Despesas ilimitadas
+• Relatório PDF com subtotais por categoria (formato universal, funciona para qualquer firma IA)
+• Múltiplos deslocamentos lado a lado
+• Visão resumida por # de sinistro
+• Cálculo automático da taxa IRS de milhagem com substituição personalizada
+
+Tudo permanece no seu dispositivo — sem nuvem, sem conta, sem telemetria. Faça login uma vez, registre despesas na hora, exporte quando chegar o dia do pagamento.
+
+Se você já perdeu um recibo porque o Excel era difícil de abrir na cabine da sua picape, esta é a ferramenta.

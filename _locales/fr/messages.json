@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Journal de Frais Adjuster — Per Diem & Km",
+    "description": "Extension name shown in Chrome Web Store and toolbar"
+  },
+  "extDescription": {
+    "message": "Suivez per diem, hôtel, kilométrage, repas par claim. Export CSV/PDF pour facturation IA et Schedule C. Sans abonnement.",
+    "description": "Short description shown in Chrome Web Store (max 132 chars)"
+  }
+}

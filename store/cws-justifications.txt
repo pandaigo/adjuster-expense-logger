@@ -1,0 +1,71 @@
+==============================================
+CWS Privacy Practices Tab — Justification (Adjuster Expense Logger)
+==============================================
+
+CWS Dashboard → Privacy Practices タブにこのファイルから各セクションを転記する。
+
+==============================================
+1. Single Purpose
+==============================================
+
+This extension has a single purpose: to help independent insurance adjusters log per-claim deployment expenses (per diem, hotel, mileage, meals, parking, supplies, phone, other) on the fly and export them as CSV or PDF for IA company billing and Schedule C tax filing. All data is stored locally in the browser (chrome.storage.local) and is never transmitted to external servers.
+
+==============================================
+2. Permission Justifications
+==============================================
+
+----- [storage] -----
+Required to save the user's expense entries, deployment information (adjuster name, CAT event, start / end dates), Pro purchase status, and the IRS mileage rate preference locally on the device using chrome.storage.local. No data is sent to any external server.
+
+----- [host_permissions: https://extensionpay.com/*] -----
+Required by ExtensionPay (the payment provider) to detect when a one-time payment is completed. The ExtPay.js content script runs on the ExtensionPay checkout page to communicate payment status back to the extension. Only purchase status (paid / unpaid) is shared with ExtensionPay.
+
+==============================================
+3. Remote Code Use
+==============================================
+
+Selection: **"No, I am not using remote code"**
+
+Justification:
+This extension does not use any remotely hosted code. All scripts are bundled within the extension package. No CDN script tags, no eval(), no new Function(), and no dynamic import() are used.
+
+Pre-submission verification command:
+  grep -rE "(<script src=\"https?:|eval\(|new Function\(|import\()" popup.* background.* lib/ scripts/
+
+==============================================
+4. Data Usage Disclosures (3項目すべてチェック)
+==============================================
+
+[x] I certify that the disclosures above are correct. I do not sell or transfer user data to third parties for purposes other than those approved.
+[x] I do not use or transfer user data for purposes unrelated to my item's single purpose.
+[x] I do not use or transfer user data for determining creditworthiness or for lending purposes.
+
+==============================================
+5. Data Collection Types — 全項目 Not collected
+==============================================
+
+[ ] Personally identifiable information         ← Not collected
+[ ] Health information                          ← Not collected
+[ ] Financial and payment information           ← Not collected (handled by ExtensionPay/Stripe directly, not stored by this extension)
+[ ] Authentication information                  ← Not collected
+[ ] Personal communications                     ← Not collected
+[ ] Location                                    ← Not collected
+[ ] Web history                                 ← Not collected
+[ ] User activity                               ← Not collected
+[ ] Website content                             ← Not collected
+
+Supplementary note:
+Expense amounts, claim numbers, deployment details, and the adjuster's name (if entered) are stored locally on the user's device using chrome.storage.local. No analytics, tracking, or telemetry is included. No user accounts are required. The only external communication is with ExtensionPay (extensionpay.com) to process one-time payments and verify purchase status.
+
+==============================================
+6. 提出前 最終チェック
+==============================================
+
+[ ] Single Purpose 文と manifest.json description が整合（"track per diem, hotel, mileage..." を双方に含む）
+[ ] storage / host_permissions すべてに Justification あり
+[ ] activeTab / contextMenus / downloads 等は manifest から削除済み、ここからも削除済み
+[ ] Remote Code: grep で eval/new Function/dynamic import/CDN なしを確認
+[ ] Data Collection: 全項目 Not collected
+[ ] Data Usage Disclosures: 3項目チェック
+[ ] Privacy Policy URL: https://pandaigo.github.io/adjuster-expense-logger/store/privacy-policy.html を GitHub Pages で公開済み
+[ ] CWS Non-Trader 申告で個人情報非公開

@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Registro Spese Adjuster — Per Diem & Km",
+    "description": "Extension name shown in Chrome Web Store and toolbar"
+  },
+  "extDescription": {
+    "message": "Registra per diem, hotel, chilometri, pasti per sinistro. Esporta CSV/PDF per fatturazione IA e Schedule C. Senza abbonamento.",
+    "description": "Short description shown in Chrome Web Store (max 132 chars)"
+  }
+}

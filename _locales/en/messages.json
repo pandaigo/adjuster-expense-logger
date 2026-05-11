@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Adjuster Expense Logger — Per Diem & Mileage",
+    "description": "Extension name shown in Chrome Web Store and toolbar"
+  },
+  "extDescription": {
+    "message": "Track per diem, hotel, mileage, meals per claim. CSV/PDF export for IA billing and Schedule C taxes. No subscription.",
+    "description": "Short description shown in Chrome Web Store (max 132 chars)"
+  }
+}

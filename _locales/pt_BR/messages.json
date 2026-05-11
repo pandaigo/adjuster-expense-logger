@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Registro de Despesas do Ajustador — Per Diem",
+    "description": "Extension name shown in Chrome Web Store and toolbar"
+  },
+  "extDescription": {
+    "message": "Registre per diem, hotel, milhagem e refeições por sinistro. Exporte CSV/PDF para faturamento IA e Schedule C. Sem assinatura.",
+    "description": "Short description shown in Chrome Web Store (max 132 chars)"
+  }
+}

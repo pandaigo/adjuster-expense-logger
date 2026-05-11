@@ -1,0 +1,22 @@
+{
+  "name": "adjuster-expense-logger",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "smoke": "node scripts/smoke-test.mjs",
+    "test:pure": "node --test tests/pure/expense-utils.test.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "test": "npm run smoke && npm run test:pure && npm run e2e",
+    "zip": "node scripts/zip.mjs",
+    "icons": "node scripts/gen-icons.mjs",
+    "store-assets": "node scripts/gen-store-assets.mjs",
+    "evidence:logs": "node scripts/save-test-logs.mjs",
+    "evidence:shots": "node scripts/save-screenshots.mjs"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.0.0",
+    "sharp": "^0.33.0"
+  }
+}

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="cross-promo.css">
+</head>
+<body>
+  <div id="main-view">
+    <header>
+      <div class="header-left">
+        <img src="icons/icon48.png" alt="" width="24" height="24">
+        <h1>Adjuster Expense Logger</h1>
+      </div>
+      <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings">⚙</button>
+    </header>
+
+    <div id="deployment-bar" class="deployment-bar">
+      <div class="deployment-info">
+        <span id="deployment-name" class="deployment-name">No deployment set</span>
+        <span id="deployment-meta" class="deployment-meta"></span>
+      </div>
+      <button id="btn-edit-deployment" class="link-btn">Edit</button>
+    </div>
+
+    <div id="totals-bar" class="totals-bar">
+      <div class="totals-main">
+        <span class="totals-label">Total</span>
+        <span id="total-amount" class="total-amount">$0.00</span>
+        <span id="total-count" class="total-count">0 entries</span>
+      </div>
+      <button id="btn-filter" class="link-btn" title="Filter">Filter</button>
+    </div>
+
+    <div id="add-form" class="add-form">
+      <button id="btn-toggle-add" class="btn-primary btn-wide">+ Add expense</button>
+      <div id="form-fields" class="form-fields hidden">
+        <div class="row">
+          <input type="date" id="f-date" aria-label="Date">
+          <select id="f-category" aria-label="Category">
+            <option value="per_diem">Per diem</option>
+            <option value="hotel">Hotel</option>
+            <option value="mileage">Mileage</option>
+            <option value="meals">Meals</option>
+            <option value="parking">Parking</option>
+            <option value="supplies">Supplies</option>
+            <option value="phone">Phone</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="row">
+          <input type="number" id="f-amount" placeholder="$ Amount" step="0.01" min="0" aria-label="Amount">
+          <input type="number" id="f-miles" placeholder="Miles" step="0.1" min="0" class="hidden" aria-label="Miles">
+        </div>
+        <div class="row">
+          <input type="text" id="f-claim" placeholder="Claim #" aria-label="Claim number">
+        </div>
+        <div class="row">
+          <input type="text" id="f-memo" placeholder="Memo (optional)" aria-label="Memo">
+        </div>
+        <div class="row row-actions">
+          <button id="btn-cancel-add" class="btn-secondary">Cancel</button>
+          <button id="btn-save-add" class="btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="list-empty" class="list-empty hidden">
+      <p>No expenses yet.</p>
+      <p class="muted">Tap + Add expense to log your first one.</p>
+    </div>
+
+    <ul id="expense-list" class="expense-list"></ul>
+
+    <div id="cross-promo" class="hidden"></div>
+
+    <footer>
+      <button id="btn-export-csv" class="link-btn">Export CSV</button>
+      <button id="btn-export-pdf" class="link-btn">Export PDF</button>
+      <button id="btn-import" class="link-btn">Import</button>
+      <input type="file" id="file-import" accept=".csv,.json" hidden>
+      <div id="quota-info" class="quota-info"></div>
+    </footer>
+  </div>
+
+  <!-- Filter modal -->
+  <div id="filter-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>Filter</h2>
+      <label>Claim #
+        <input type="text" id="flt-claim" placeholder="Any">
+      </label>
+      <label>Category
+        <select id="flt-category">
+          <option value="">All</option>
+          <option value="per_diem">Per diem</option>
+          <option value="hotel">Hotel</option>
+          <option value="mileage">Mileage</option>
+          <option value="meals">Meals</option>
+          <option value="parking">Parking</option>
+          <option value="supplies">Supplies</option>
+          <option value="phone">Phone</option>
+          <option value="other">Other</option>
+        </select>
+      </label>
+      <label>From
+        <input type="date" id="flt-from">
+      </label>
+      <label>To
+        <input type="date" id="flt-to">
+      </label>
+      <div class="row row-actions">
+        <button id="btn-filter-clear" class="btn-secondary">Clear</button>
+        <button id="btn-filter-apply" class="btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deployment config modal -->
+  <div id="deployment-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>Deployment</h2>
+      <label>Adjuster name
+        <input type="text" id="dep-name" placeholder="Frank Riley">
+      </label>
+      <label>CAT / Event name
+        <input type="text" id="dep-event" placeholder="Hurricane Helene 2025">
+      </label>
+      <label>Start date
+        <input type="date" id="dep-start">
+      </label>
+      <label>End date
+        <input type="date" id="dep-end">
+      </label>
+      <div class="row row-actions">
+        <button id="btn-deployment-cancel" class="btn-secondary">Cancel</button>
+        <button id="btn-deployment-save" class="btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>Settings</h2>
+      <label>IRS mileage rate
+        <input type="number" id="set-irs-rate" step="0.001" min="0" placeholder="0.725">
+        <span class="muted small">2026 federal: $0.725/mi</span>
+      </label>
+      <div class="settings-section">
+        <p id="settings-paid-status" class="muted small"></p>
+        <p class="muted small">Not tax or legal advice. Verify amounts against your CPA, IA company, and IRS rules before submitting.</p>
+      </div>
+      <div class="row row-actions">
+        <button id="btn-settings-close" class="btn-secondary">Close</button>
+        <button id="btn-settings-save" class="btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upgrade modal -->
+  <div id="upgrade-modal" class="modal hidden">
+    <div class="upgrade-card">
+      <h2>Unlock Pro</h2>
+      <p>Free is limited to 30 expenses.<br>Upgrade once, use forever.</p>
+      <ul>
+        <li>Unlimited expenses</li>
+        <li>PDF report (per diem + mileage subtotals)</li>
+        <li>Multiple deployments side by side</li>
+        <li>Claim # summary view</li>
+      </ul>
+      <button id="btn-upgrade" class="btn-primary btn-wide">Upgrade — $12.99 one-time</button>
+      <button id="btn-upgrade-close" class="btn-secondary btn-wide">Maybe later</button>
+    </div>
+  </div>
+
+  <script src="lib/expense-utils.js"></script>
+  <script src="libs/pdf-lib.min.js"></script>
+  <script src="ExtPay.js"></script>
+  <script src="cross-promo.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

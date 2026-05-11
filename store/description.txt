@@ -1,0 +1,97 @@
+==============================
+ストア説明文（Description）
+==============================
+
+Stop wasting hours formatting Excel for IA billing.
+
+Adjuster Expense Logger keeps every per diem, hotel night, mileage trip, meal, parking fee, and supply purchase organized by claim number — ready to export as CSV for the IA company invoice or Schedule C tax filing.
+
+Built for independent insurance adjusters who deploy on CAT (hurricane, hail, freeze, wildfire) and run multiple claims a day.
+
+✔ Track per diem, hotel, mileage (IRS rate auto-calc), meals, parking, supplies, phone, other
+✔ Tag every expense with a claim # — instant totals by claim or category
+✔ Filter by claim / category / date range
+✔ CSV export ready for IA billing or accountant handoff
+✔ JSON backup for switching devices
+✔ Deployment header (adjuster name, CAT event, start / end dates) included in every export
+
+Free plan:
+• Log up to 30 expenses
+• CSV / JSON import & export — your data is always yours
+
+Pro plan ($12.99 one-time, no subscription):
+• Unlimited expenses
+• PDF report with per-category subtotals (universal format, works for any IA firm filing)
+• Multiple deployments side by side
+• Claim # summary view
+• IRS mileage rate auto-calc with custom override
+
+Everything stays on your device — no cloud, no account, no telemetry. Sign in once, log expenses on the fly, export when payday comes.
+
+If you have ever lost a receipt because Excel was hard to open in your truck cab, this is the tool.
+
+==============================
+カテゴリ
+==============================
+Workflow & Planning
+
+（IA は claim / billing 業務管理ツールのため Workflow & Planning が適合。Tools は埋もれるため不採用）
+
+==============================
+ホームページURL
+==============================
+https://pandaigo.github.io/adjuster-expense-logger/
+
+==============================
+サポートURL（メールで対応するならプライバシーポリシーURLでOK）
+==============================
+https://pandaigo.github.io/adjuster-expense-logger/store/privacy-policy.html
+
+==============================
+単一用途の説明
+==============================
+This extension has a single purpose: to help independent insurance adjusters log deployment expenses (per diem, hotel, mileage, meals, parking, supplies, phone, other) per claim, and export them as CSV or PDF for IA company billing and personal tax records.
+
+==============================
+storage が必要な理由
+==============================
+Required to save the user's expense entries, deployment information (adjuster name, CAT event, dates), Pro purchase status, and the IRS mileage rate preference locally on the device using chrome.storage.local. No data is sent to any external server.
+
+==============================
+ホスト権限が必要な理由（content_scripts の matches）
+==============================
+https://extensionpay.com/*:
+Required by ExtensionPay (the payment provider) to detect when a payment is completed. The ExtPay.js content script runs on the ExtensionPay checkout page to communicate payment status back to the extension.
+
+==============================
+リモートコードを使用しているか
+==============================
+No. This extension does not use any remotely hosted code. All scripts are bundled within the extension package.
+
+==============================
+ユーザーデータの収集について
+==============================
+以下すべてチェックなし（収集しない）:
+- [ ] 個人を特定できる情報
+- [ ] 健康に関する情報
+- [ ] 財務状況や支払いに関する情報
+- [ ] 認証に関する情報
+- [ ] 個人的コミュニケーション
+- [ ] 位置情報
+- [ ] ウェブ履歴
+- [ ] ユーザーのアクティビティ
+- [ ] ウェブサイトのコンテンツ
+
+補足: All data is stored locally on the user's device using chrome.storage.local. No analytics, tracking, or telemetry is included. No user accounts are required. Expense amounts and claim numbers stay on the device. The only external communication is with ExtensionPay (extensionpay.com) to process one-time payments and verify purchase status.
+
+==============================
+開示の表明（すべてチェックを入れる）
+==============================
+- [x] 私は以下の開示が正しいものであることを表明します。私は、承認されている以外の用途で第三者にユーザーデータを販売、転送しません
+- [x] 私はアイテムの唯一の目的と関係のない目的でユーザーデータを使用または転送しません
+- [x] 私は信用力を判断する目的または融資目的でユーザーデータを使用または転送しません
+
+==============================
+プライバシーポリシーのURL
+==============================
+https://pandaigo.github.io/adjuster-expense-logger/store/privacy-policy.html

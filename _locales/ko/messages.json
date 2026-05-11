@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "보험 손해사정사 경비 기록 — Per Diem·주행거리",
+    "description": "Extension name shown in Chrome Web Store and toolbar"
+  },
+  "extDescription": {
+    "message": "Per Diem·호텔·주행거리·식비를 claim별로 기록. IA 청구 및 Schedule C 세무용 CSV/PDF 내보내기. 구독 없음.",
+    "description": "Short description shown in Chrome Web Store (max 132 chars)"
+  }
+}

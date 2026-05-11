@@ -1,0 +1,27 @@
+Arrêtez de perdre des heures à formater Excel pour la facturation IA.
+
+Adjuster Expense Logger garde chaque per diem, nuit d'hôtel, trajet kilométrique, repas, frais de stationnement et achat de fournitures organisé par numéro de claim — prêt à être exporté en CSV pour la facture de la compagnie IA ou la déclaration fiscale Schedule C.
+
+Conçu pour les experts en sinistres indépendants (Independent Adjusters) déployés en CAT (ouragan, grêle, gel, incendie) qui gèrent plusieurs claims par jour.
+
+✔ Suivez per diem, hôtel, kilométrage (calcul automatique au taux IRS), repas, stationnement, fournitures, téléphone, divers
+✔ Étiquetez chaque dépense avec un # de claim — totaux instantanés par claim ou catégorie
+✔ Filtrez par claim / catégorie / plage de dates
+✔ Export CSV prêt pour la facturation IA ou la remise au comptable
+✔ Sauvegarde JSON pour changer d'appareil
+✔ En-tête de deployment (nom de l'expert, événement CAT, dates de début/fin) inclus dans chaque export
+
+Plan Gratuit :
+• Jusqu'à 30 dépenses enregistrées
+• Import & export CSV / JSON — vos données restent toujours les vôtres
+
+Plan Pro (12,99 $ paiement unique, sans abonnement) :
+• Dépenses illimitées
+• Rapport PDF avec sous-totaux par catégorie (format universel, fonctionne pour toute firme IA)
+• Plusieurs deployments en parallèle
+• Vue récapitulative par # de claim
+• Calcul automatique du taux IRS de kilométrage avec valeur personnalisée
+
+Tout reste sur votre appareil — pas de cloud, pas de compte, pas de télémétrie. Connectez-vous une fois, enregistrez vos dépenses à la volée, exportez le jour de paie.
+
+Si vous avez déjà perdu un reçu parce qu'Excel était difficile à ouvrir dans la cabine de votre pick-up, c'est l'outil qu'il vous faut.

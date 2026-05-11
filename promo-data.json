@@ -1,0 +1,43 @@
+{
+  "_comment": "クロスプロモ用データ。各拡張に同じファイルをコピー、自分自身は selfId で除外する。2026-05-09: 07/08/10 をアーカイブ送りにしたため送客先から削除済み。",
+  "promotions": [
+    {
+      "id": "quickreply",
+      "name": "QuickReply Templates",
+      "tagline": "Canned replies for sales, CS & sellers",
+      "icon": "💬",
+      "niche": "sales",
+      "cwsUrl": "https://chromewebstore.google.com/detail/heghojbiaeihadfhemdiefkcjafjlmlh"
+    },
+    {
+      "id": "watermark",
+      "name": "Watermark Express",
+      "tagline": "Bulk image watermarking in seconds",
+      "icon": "🖼️",
+      "niche": "ecom",
+      "cwsUrl": "https://chromewebstore.google.com/detail/ifmcfhngdopbofomledkhmocnfkflgdd"
+    },
+    {
+      "id": "contact-notes",
+      "name": "Quick Contact Notes",
+      "tagline": "Personal CRM & follow-up reminder",
+      "icon": "📇",
+      "niche": "sales",
+      "cwsUrl": "https://chromewebstore.google.com/detail/afdbiijbmlnflkgcdephgnbbpapobnoa"
+    },
+    {
+      "id": "custom-order",
+      "name": "Custom Order Notes",
+      "tagline": "Never miss a buyer custom request",
+      "icon": "📦",
+      "niche": "ecom",
+      "cwsUrl": "https://chromewebstore.google.com/detail/custom-order-notes"
+    }
+  ],
+  "affinity": {
+    "quickreply": ["contact-notes", "custom-order"],
+    "watermark": ["custom-order"],
+    "contact-notes": ["quickreply"],
+    "custom-order": ["watermark", "quickreply"]
+  }
+}

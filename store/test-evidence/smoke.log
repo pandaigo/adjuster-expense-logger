@@ -1,0 +1,43 @@
+
+> adjuster-expense-logger@1.0.0 smoke
+> node scripts/smoke-test.mjs
+
+
+=== Smoke Test ===
+
+[1] manifest.json
+  ✓ JSON parse OK
+  ✓ manifest_version: 3
+  ✓ name / version / description present
+  ✓ description length: 22 chars
+  ✓ no <all_urls> in host_permissions
+  ✓ no <all_urls> in content_scripts
+
+[2] popup.html <-> popup.js ID 整合性
+  ✓ JS参照IDすべてHTMLに存在 (46件)
+
+[3] CSP適合チェック
+  ✓ popup.html: no inline scripts
+  ✓ popup.html: no inline event handlers
+  ✓ popup.html: no javascript: URLs
+
+[4] JS 文法チェック
+  ✓ popup.js: 文法OK
+  ✓ background.js: 文法OK
+
+[5] 必須ファイル存在
+  ✓ manifest.json
+  ✓ background.js
+  ✓ ExtPay.js
+  ✓ popup.html
+  ✓ popup.css
+  ✓ popup.js
+  ✓ icons/icon16.png
+  ✓ icons/icon48.png
+  ✓ icons/icon128.png
+  ✓ store/description.txt
+  ✓ store/privacy-policy.html
+
+=== Result ===
+OK: PASS
+Errors: 0

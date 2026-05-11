@@ -1,0 +1,266 @@
+
+> adjuster-expense-logger@1.0.0 test:pure
+> node --test tests/pure/expense-utils.test.mjs
+
+TAP version 13
+# Subtest: normalizeExpense accepts a valid entry
+ok 1 - normalizeExpense accepts a valid entry
+  ---
+  duration_ms: 1.4845
+  type: 'test'
+  ...
+# Subtest: normalizeExpense rejects missing date
+ok 2 - normalizeExpense rejects missing date
+  ---
+  duration_ms: 0.1745
+  type: 'test'
+  ...
+# Subtest: normalizeExpense rejects malformed date
+ok 3 - normalizeExpense rejects malformed date
+  ---
+  duration_ms: 0.1331
+  type: 'test'
+  ...
+# Subtest: normalizeExpense rejects negative amount
+ok 4 - normalizeExpense rejects negative amount
+  ---
+  duration_ms: 0.1212
+  type: 'test'
+  ...
+# Subtest: normalizeExpense rejects non-numeric amount
+ok 5 - normalizeExpense rejects non-numeric amount
+  ---
+  duration_ms: 0.2239
+  type: 'test'
+  ...
+# Subtest: normalizeExpense rounds amount to 2 decimals
+ok 6 - normalizeExpense rounds amount to 2 decimals
+  ---
+  duration_ms: 0.803
+  type: 'test'
+  ...
+# Subtest: normalizeExpense falls back to "other" for unknown category
+ok 7 - normalizeExpense falls back to "other" for unknown category
+  ---
+  duration_ms: 0.2301
+  type: 'test'
+  ...
+# Subtest: normalizeExpense preserves miles when non-negative number
+ok 8 - normalizeExpense preserves miles when non-negative number
+  ---
+  duration_ms: 0.1351
+  type: 'test'
+  ...
+# Subtest: normalizeExpense drops negative miles
+ok 9 - normalizeExpense drops negative miles
+  ---
+  duration_ms: 0.3577
+  type: 'test'
+  ...
+# Subtest: normalizeExpense preserves id when provided
+ok 10 - normalizeExpense preserves id when provided
+  ---
+  duration_ms: 0.3872
+  type: 'test'
+  ...
+# Subtest: mileageAmount uses default IRS rate when none provided
+ok 11 - mileageAmount uses default IRS rate when none provided
+  ---
+  duration_ms: 0.1925
+  type: 'test'
+  ...
+# Subtest: mileageAmount uses custom rate
+ok 12 - mileageAmount uses custom rate
+  ---
+  duration_ms: 0.1043
+  type: 'test'
+  ...
+# Subtest: mileageAmount returns 0 for non-positive miles
+ok 13 - mileageAmount returns 0 for non-positive miles
+  ---
+  duration_ms: 0.0803
+  type: 'test'
+  ...
+# Subtest: mileageAmount rounds to 2 decimals
+ok 14 - mileageAmount rounds to 2 decimals
+  ---
+  duration_ms: 0.0741
+  type: 'test'
+  ...
+# Subtest: filterExpenses by claim
+ok 15 - filterExpenses by claim
+  ---
+  duration_ms: 0.1645
+  type: 'test'
+  ...
+# Subtest: filterExpenses claim is case-insensitive
+ok 16 - filterExpenses claim is case-insensitive
+  ---
+  duration_ms: 0.0926
+  type: 'test'
+  ...
+# Subtest: filterExpenses by category
+ok 17 - filterExpenses by category
+  ---
+  duration_ms: 0.0923
+  type: 'test'
+  ...
+# Subtest: filterExpenses by date range (inclusive)
+ok 18 - filterExpenses by date range (inclusive)
+  ---
+  duration_ms: 0.1103
+  type: 'test'
+  ...
+# Subtest: filterExpenses returns [] for null input
+ok 19 - filterExpenses returns [] for null input
+  ---
+  duration_ms: 0.6559
+  type: 'test'
+  ...
+# Subtest: totals sums amount and counts entries
+ok 20 - totals sums amount and counts entries
+  ---
+  duration_ms: 0.1423
+  type: 'test'
+  ...
+# Subtest: totals returns zeroes for empty input
+ok 21 - totals returns zeroes for empty input
+  ---
+  duration_ms: 0.1876
+  type: 'test'
+  ...
+# Subtest: subtotalsByCategory yields zero for unused categories
+ok 22 - subtotalsByCategory yields zero for unused categories
+  ---
+  duration_ms: 0.1841
+  type: 'test'
+  ...
+# Subtest: subtotalsByClaim groups empty claim under "(no claim)"
+ok 23 - subtotalsByClaim groups empty claim under "(no claim)"
+  ---
+  duration_ms: 0.19
+  type: 'test'
+  ...
+# Subtest: toCSV produces header + rows
+ok 24 - toCSV produces header + rows
+  ---
+  duration_ms: 0.2435
+  type: 'test'
+  ...
+# Subtest: toCSV escapes quotes and commas
+ok 25 - toCSV escapes quotes and commas
+  ---
+  duration_ms: 0.205
+  type: 'test'
+  ...
+# Subtest: parseCSV round-trip preserves data
+ok 26 - parseCSV round-trip preserves data
+  ---
+  duration_ms: 0.4671
+  type: 'test'
+  ...
+# Subtest: parseCSV drops rows with invalid date
+ok 27 - parseCSV drops rows with invalid date
+  ---
+  duration_ms: 0.1369
+  type: 'test'
+  ...
+# Subtest: parseCSV handles empty input
+ok 28 - parseCSV handles empty input
+  ---
+  duration_ms: 0.0899
+  type: 'test'
+  ...
+# Subtest: toBackupJSON / parseBackupJSON round-trip
+ok 29 - toBackupJSON / parseBackupJSON round-trip
+  ---
+  duration_ms: 0.8068
+  type: 'test'
+  ...
+# Subtest: parseBackupJSON returns empty for malformed JSON
+ok 30 - parseBackupJSON returns empty for malformed JSON
+  ---
+  duration_ms: 0.1371
+  type: 'test'
+  ...
+# Subtest: formatAmount adds dollar sign and thousands separator
+ok 31 - formatAmount adds dollar sign and thousands separator
+  ---
+  duration_ms: 0.1943
+  type: 'test'
+  ...
+# Subtest: formatAmount handles zero and negatives gracefully
+ok 32 - formatAmount handles zero and negatives gracefully
+  ---
+  duration_ms: 0.0892
+  type: 'test'
+  ...
+# Subtest: FREE_LIMIT is 30 (Phase 3 確定値)
+ok 33 - FREE_LIMIT is 30 (Phase 3 確定値)
+  ---
+  duration_ms: 0.0739
+  type: 'test'
+  ...
+# Subtest: DEFAULT_IRS_RATE matches 2026 federal value
+ok 34 - DEFAULT_IRS_RATE matches 2026 federal value
+  ---
+  duration_ms: 0.0768
+  type: 'test'
+  ...
+# Subtest: normalizeExpense rejects amount over MAX_AMOUNT (typo guard)
+ok 35 - normalizeExpense rejects amount over MAX_AMOUNT (typo guard)
+  ---
+  duration_ms: 0.1657
+  type: 'test'
+  ...
+# Subtest: normalizeExpense accepts MAX_AMOUNT exactly
+ok 36 - normalizeExpense accepts MAX_AMOUNT exactly
+  ---
+  duration_ms: 0.1168
+  type: 'test'
+  ...
+# Subtest: subtotalsByClaim case-insensitive aggregation (ABC-1 + abc-1 merge)
+ok 37 - subtotalsByClaim case-insensitive aggregation (ABC-1 + abc-1 merge)
+  ---
+  duration_ms: 0.1159
+  type: 'test'
+  ...
+# Subtest: subtotalsByClaim preserves first-seen display casing
+ok 38 - subtotalsByClaim preserves first-seen display casing
+  ---
+  duration_ms: 0.1236
+  type: 'test'
+  ...
+# Subtest: parseCSVDetailed reports skipped row count
+ok 39 - parseCSVDetailed reports skipped row count
+  ---
+  duration_ms: 0.1282
+  type: 'test'
+  ...
+# Subtest: parseCSVDetailed handles empty input safely
+ok 40 - parseCSVDetailed handles empty input safely
+  ---
+  duration_ms: 0.1577
+  type: 'test'
+  ...
+# Subtest: csvRows preserves CR inside quoted memo (Excel round-trip)
+ok 41 - csvRows preserves CR inside quoted memo (Excel round-trip)
+  ---
+  duration_ms: 0.1998
+  type: 'test'
+  ...
+# Subtest: mileageAmount with custom rate 0.67 matches 2025 federal value (regression)
+ok 42 - mileageAmount with custom rate 0.67 matches 2025 federal value (regression)
+  ---
+  duration_ms: 0.0815
+  type: 'test'
+  ...
+1..42
+# tests 42
+# suites 0
+# pass 42
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 127.0388

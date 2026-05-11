@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "保険査定人の経費記録 — Per Diem・走行距離",
+    "description": "Extension name shown in Chrome Web Store and toolbar"
+  },
+  "extDescription": {
+    "message": "Per Diem・宿泊・走行距離・食事をclaim別に記録。IA請求とSchedule C申告用にCSV/PDFで出力。サブスク不要。",
+    "description": "Short description shown in Chrome Web Store (max 132 chars)"
+  }
+}

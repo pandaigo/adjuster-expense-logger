@@ -1,0 +1,5 @@
+node_modules/
+*.zip
+test-page.html
+_zip_tmp/
+screenshots/

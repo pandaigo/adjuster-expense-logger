@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "保险理算师费用记录 — Per Diem 与里程",
+    "description": "Extension name shown in Chrome Web Store and toolbar"
+  },
+  "extDescription": {
+    "message": "按 claim 记录 Per Diem、酒店、里程、餐费。导出 CSV/PDF 用于 IA 账单和 Schedule C 报税。无需订阅。",
+    "description": "Short description shown in Chrome Web Store (max 132 chars)"
+  }
+}

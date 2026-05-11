@@ -1,0 +1,27 @@
+Schluss mit stundenlangem Excel-Formatieren für die IA-Abrechnung.
+
+Adjuster Expense Logger erfasst jede Per-Diem-Zahlung, Hotelübernachtung, Kilometerfahrt, Mahlzeit, Parkgebühr und Materialanschaffung – sortiert nach Claim-Nummer und sofort als CSV exportierbar für die Rechnung an die IA-Firma oder die Schedule-C-Steuererklärung.
+
+Entwickelt für unabhängige Schadensregulierer (Independent Adjusters), die im CAT-Einsatz (Hurrikan, Hagel, Frost, Waldbrand) täglich mehrere Claims abwickeln.
+
+✔ Erfassen Sie Per Diem, Hotel, Kilometer (mit automatischer IRS-Satz-Berechnung), Mahlzeiten, Parken, Material, Telefon, Sonstiges
+✔ Jede Ausgabe mit Claim-# kennzeichnen – sofortige Summen je Claim oder Kategorie
+✔ Filter nach Claim / Kategorie / Datumsbereich
+✔ CSV-Export einsatzbereit für IA-Abrechnung oder Übergabe an den Steuerberater
+✔ JSON-Backup für den Gerätewechsel
+✔ Deployment-Header (Name des Adjusters, CAT-Ereignis, Start-/Enddatum) automatisch in jedem Export
+
+Free-Plan:
+• Bis zu 30 Ausgaben erfassen
+• CSV-/JSON-Import & -Export – Ihre Daten gehören immer Ihnen
+
+Pro-Plan (12,99 $ Einmalzahlung, kein Abo):
+• Unbegrenzte Ausgaben
+• PDF-Bericht mit Zwischensummen je Kategorie (universelles Format, passt für jede IA-Firma)
+• Mehrere Deployments parallel
+• Claim-# Übersichtsansicht
+• Automatische IRS-Kilometersatz-Berechnung mit individuellem Überschreiben
+
+Alle Daten bleiben auf Ihrem Gerät – keine Cloud, kein Konto, keine Telemetrie. Einmal anmelden, unterwegs erfassen, am Zahltag exportieren.
+
+Wenn Sie schon einmal einen Beleg verloren haben, weil Excel im Truck-Führerhaus schwer zu öffnen war, ist das Ihr Werkzeug.

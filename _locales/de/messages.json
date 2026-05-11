@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Adjuster Spesen-Logger — Per Diem & Kilometer",
+    "description": "Extension name shown in Chrome Web Store and toolbar"
+  },
+  "extDescription": {
+    "message": "Per Diem, Hotel, Kilometer, Mahlzeiten je Claim erfassen. CSV/PDF-Export für IA-Abrechnung und Schedule C. Kein Abo.",
+    "description": "Short description shown in Chrome Web Store (max 132 chars)"
+  }
+}
