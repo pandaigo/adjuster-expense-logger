@@ -18,9 +18,9 @@ Plan Gratis:
 Plan Pro ($12.99 pago único, sin suscripción):
 • Gastos ilimitados
 • Reporte PDF con subtotales por categoría (formato universal, funciona para cualquier firma IA)
-• Múltiples despliegues lado a lado
-• Vista resumen por # de reclamo
-• Cálculo automático de tarifa IRS de millaje con anulación personalizada
+• Vista resumen por # de reclamo y categoría (subtotales agrupados para facturación IA)
+• Tarifa IRS de millaje personalizable
+• Modo oscuro
 
 Todo permanece en tu dispositivo — sin nube, sin cuenta, sin telemetría. Inicia sesión una vez, registra gastos sobre la marcha, exporta cuando llegue el día de pago.
 

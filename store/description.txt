@@ -22,9 +22,9 @@ Free plan:
 Pro plan ($12.99 one-time, no subscription):
 • Unlimited expenses
 • PDF report with per-category subtotals (universal format, works for any IA firm filing)
-• Multiple deployments side by side
-• Claim # summary view
-• IRS mileage rate auto-calc with custom override
+• Claim # &amp; category summary view (subtotals grouped for easy IA billing)
+• Custom IRS mileage rate override
+• Dark mode
 
 Everything stays on your device — no cloud, no account, no telemetry. Sign in once, log expenses on the fly, export when payday comes.
 

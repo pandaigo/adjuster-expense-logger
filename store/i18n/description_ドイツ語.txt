@@ -18,9 +18,9 @@ Free-Plan:
 Pro-Plan (12,99 $ Einmalzahlung, kein Abo):
 • Unbegrenzte Ausgaben
 • PDF-Bericht mit Zwischensummen je Kategorie (universelles Format, passt für jede IA-Firma)
-• Mehrere Deployments parallel
-• Claim-# Übersichtsansicht
-• Automatische IRS-Kilometersatz-Berechnung mit individuellem Überschreiben
+• Claim-# und Kategorie-Übersicht (Zwischensummen gruppiert für IA-Abrechnung)
+• Anpassbarer IRS-Kilometersatz
+• Dunkler Modus
 
 Alle Daten bleiben auf Ihrem Gerät – keine Cloud, kein Konto, keine Telemetrie. Einmal anmelden, unterwegs erfassen, am Zahltag exportieren.
 

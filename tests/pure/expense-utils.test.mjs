@@ -276,3 +276,42 @@ test('csvRows preserves CR inside quoted memo (Excel round-trip)', () => {
 test('mileageAmount with custom rate 0.67 matches 2025 federal value (regression)', () => {
   assert.equal(U.mileageAmount(100, 0.67), 67);
 });
+
+// ---- 反復ループ R2 で追加: Eric が炙り出した致命修正のリグレッション ----
+
+test('parseCSVDetailed strips UTF-8 BOM (Excel/Sheets save default)', () => {
+  const csv = '﻿date,claim,category,amount,miles,memo\n' +
+              '2026-05-10,PA09887766,per_diem,110,,Day 1';
+  const r = U.parseCSVDetailed(csv);
+  assert.equal(r.expenses.length, 1, 'BOM 付き CSV を 1 件取り込めるはず');
+  assert.equal(r.expenses[0].claim, 'PA09887766');
+  assert.equal(r.expenses[0].amount, 110);
+});
+
+test('filterExpenses claim# is now partial-match (substring case-insensitive)', () => {
+  const sample = [
+    { id: 'a', date: '2026-05-01', claim: 'ALL-CAT-MIL-552134', category: 'per_diem', amount: 110 },
+    { id: 'b', date: '2026-05-02', claim: 'PA09887766',        category: 'per_diem', amount: 110 }
+  ];
+  // 部分一致: "552134" だけで ALL-CAT-MIL-552134 を引ける
+  const r1 = U.filterExpenses(sample, { claim: '552134' });
+  assert.equal(r1.length, 1);
+  assert.equal(r1[0].id, 'a');
+  // case-insensitive 維持
+  const r2 = U.filterExpenses(sample, { claim: 'pa098' });
+  assert.equal(r2.length, 1);
+  assert.equal(r2[0].id, 'b');
+});
+
+test('filterExpenses claim# partial match works on carrier-style numbers (PA / 23- / ALL- / USAA-)', () => {
+  const sample = [
+    { id: 'a', date: '2026-05-01', claim: 'PA09887766',         category: 'per_diem', amount: 110 },
+    { id: 'b', date: '2026-05-02', claim: '23-014A789',         category: 'mileage',  amount: 67 },
+    { id: 'c', date: '2026-05-03', claim: 'ALL-CAT-MIL-552134', category: 'hotel',    amount: 142 },
+    { id: 'd', date: '2026-05-04', claim: 'USAA-3892hnf',       category: 'meals',    amount: 32 }
+  ];
+  assert.equal(U.filterExpenses(sample, { claim: 'pa' }).length, 1);
+  assert.equal(U.filterExpenses(sample, { claim: 'all-cat' }).length, 1);
+  assert.equal(U.filterExpenses(sample, { claim: 'USAA' }).length, 1);
+  assert.equal(U.filterExpenses(sample, { claim: '23-' }).length, 1);
+});

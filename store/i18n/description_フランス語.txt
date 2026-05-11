@@ -18,9 +18,9 @@ Plan Gratuit :
 Plan Pro (12,99 $ paiement unique, sans abonnement) :
 • Dépenses illimitées
 • Rapport PDF avec sous-totaux par catégorie (format universel, fonctionne pour toute firme IA)
-• Plusieurs deployments en parallèle
-• Vue récapitulative par # de claim
-• Calcul automatique du taux IRS de kilométrage avec valeur personnalisée
+• Vue récapitulative par # de claim et par catégorie (sous-totaux regroupés pour la facturation IA)
+• Taux IRS de kilométrage personnalisable
+• Mode sombre
 
 Tout reste sur votre appareil — pas de cloud, pas de compte, pas de télémétrie. Connectez-vous une fois, enregistrez vos dépenses à la volée, exportez le jour de paie.
 

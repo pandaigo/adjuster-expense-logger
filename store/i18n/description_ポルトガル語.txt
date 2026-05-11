@@ -18,9 +18,9 @@ Plano Gratuito:
 Plano Pro (US$ 12,99 pagamento único, sem assinatura):
 • Despesas ilimitadas
 • Relatório PDF com subtotais por categoria (formato universal, funciona para qualquer firma IA)
-• Múltiplos deslocamentos lado a lado
-• Visão resumida por # de sinistro
-• Cálculo automático da taxa IRS de milhagem com substituição personalizada
+• Visão resumida por # de sinistro e categoria (subtotais agrupados para faturamento IA)
+• Taxa IRS de milhagem personalizável
+• Modo escuro
 
 Tudo permanece no seu dispositivo — sem nuvem, sem conta, sem telemetria. Faça login uma vez, registre despesas na hora, exporte quando chegar o dia do pagamento.
 

@@ -200,22 +200,24 @@ await run('popup-6: Mileage 自動計算 (miles=100, default 0.725 → $72.50)',
 
 await run('popup-rich: リッチデータ (15 件) でスクショ撮影', async () => {
   // ストアアセット 1 枚目用に "使い込まれた感" のあるスクショを撮る
+  // claim # は carrier 別の現実書式 (PA09887766 = State Farm 10桁、23-014A789 = Allstate、ALL-CAT-MIL-552134 = USAA)
+  // per diem は CAT deployment 標準 $110-125/日 (通常案件は $50-75)
   const richSeeds = [
-    { id: 'r1',  date: '2025-09-26', claim: 'CLM-2025-1042', category: 'per_diem', amount: 75, miles: null, memo: 'Day 1 — staging' },
-    { id: 'r2',  date: '2025-09-26', claim: 'CLM-2025-1042', category: 'hotel',    amount: 142.5, miles: null, memo: 'Marriott Tampa' },
-    { id: 'r3',  date: '2025-09-26', claim: 'CLM-2025-1042', category: 'mileage',  amount: 67.86, miles: 93.6, memo: 'Site visit' },
-    { id: 'r4',  date: '2025-09-27', claim: 'CLM-2025-1042', category: 'per_diem', amount: 75, miles: null, memo: 'Day 2' },
-    { id: 'r5',  date: '2025-09-27', claim: 'CLM-2025-1043', category: 'mileage',  amount: 95.14, miles: 131.2, memo: 'Roof inspection' },
-    { id: 'r6',  date: '2025-09-27', claim: 'CLM-2025-1043', category: 'meals',    amount: 32.45, miles: null, memo: 'Dinner with insured' },
-    { id: 'r7',  date: '2025-09-28', claim: 'CLM-2025-1044', category: 'per_diem', amount: 75, miles: null, memo: 'Day 3' },
-    { id: 'r8',  date: '2025-09-28', claim: 'CLM-2025-1044', category: 'hotel',    amount: 142.5, miles: null, memo: 'Marriott Tampa' },
-    { id: 'r9',  date: '2025-09-28', claim: 'CLM-2025-1044', category: 'parking',  amount: 18, miles: null, memo: 'Downtown garage' },
-    { id: 'r10', date: '2025-09-29', claim: 'CLM-2025-1045', category: 'mileage',  amount: 102.95, miles: 142.0, memo: 'Cross-county drive' },
-    { id: 'r11', date: '2025-09-29', claim: 'CLM-2025-1045', category: 'supplies', amount: 24.87, miles: null, memo: 'Tape, gloves, batteries' },
-    { id: 'r12', date: '2025-09-30', claim: 'CLM-2025-1046', category: 'per_diem', amount: 75, miles: null, memo: 'Day 5' },
-    { id: 'r13', date: '2025-09-30', claim: 'CLM-2025-1046', category: 'mileage',  amount: 58.72, miles: 81.0, memo: 'Site recheck' },
-    { id: 'r14', date: '2025-10-01', claim: 'CLM-2025-1047', category: 'phone',    amount: 12, miles: null, memo: 'Verizon weekly' },
-    { id: 'r15', date: '2025-10-01', claim: 'CLM-2025-1047', category: 'per_diem', amount: 75, miles: null, memo: 'Day 6' }
+    { id: 'r1',  date: '2025-09-26', claim: 'PA09887766',         category: 'per_diem', amount: 110,    miles: null,  memo: 'Day 1 — staging' },
+    { id: 'r2',  date: '2025-09-26', claim: 'PA09887766',         category: 'hotel',    amount: 142.5,  miles: null,  memo: 'Marriott Tampa' },
+    { id: 'r3',  date: '2025-09-26', claim: 'PA09887766',         category: 'mileage',  amount: 67.86,  miles: 93.6,  memo: 'Site visit' },
+    { id: 'r4',  date: '2025-09-27', claim: 'PA09887766',         category: 'per_diem', amount: 110,    miles: null,  memo: 'Day 2' },
+    { id: 'r5',  date: '2025-09-27', claim: '23-014A789',         category: 'mileage',  amount: 95.14,  miles: 131.2, memo: 'Roof inspection' },
+    { id: 'r6',  date: '2025-09-27', claim: '23-014A789',         category: 'meals',    amount: 32.45,  miles: null,  memo: 'Dinner with insured' },
+    { id: 'r7',  date: '2025-09-28', claim: 'ALL-CAT-MIL-552134', category: 'per_diem', amount: 125,    miles: null,  memo: 'Day 3' },
+    { id: 'r8',  date: '2025-09-28', claim: 'ALL-CAT-MIL-552134', category: 'hotel',    amount: 142.5,  miles: null,  memo: 'Marriott Tampa' },
+    { id: 'r9',  date: '2025-09-28', claim: 'ALL-CAT-MIL-552134', category: 'parking',  amount: 18,     miles: null,  memo: 'Downtown garage' },
+    { id: 'r10', date: '2025-09-29', claim: 'USAA-3892hnf',       category: 'mileage',  amount: 102.95, miles: 142.0, memo: 'Cross-county drive' },
+    { id: 'r11', date: '2025-09-29', claim: 'USAA-3892hnf',       category: 'supplies', amount: 24.87,  miles: null,  memo: 'Tape, gloves, batteries' },
+    { id: 'r12', date: '2025-09-30', claim: 'PA09887766',         category: 'per_diem', amount: 110,    miles: null,  memo: 'Day 5' },
+    { id: 'r13', date: '2025-09-30', claim: 'PA09887766',         category: 'mileage',  amount: 58.72,  miles: 81.0,  memo: 'Site recheck' },
+    { id: 'r14', date: '2025-10-01', claim: '23-014A789',         category: 'phone',    amount: 12,     miles: null,  memo: 'Verizon weekly' },
+    { id: 'r15', date: '2025-10-01', claim: 'USAA-3892hnf',       category: 'per_diem', amount: 110,    miles: null,  memo: 'Day 6' }
   ];
   const deployment = { name: 'Frank Riley', event: 'Hurricane Helene 2025', start: '2025-09-26', end: '2025-10-15' };
   const page = await freshPopup(browser, extensionId, { preload: { expenses: richSeeds, deployment } });
@@ -228,10 +230,10 @@ await run('popup-rich: リッチデータ (15 件) でスクショ撮影', async
   await shot(page, 'rich-deployment-modal');
   await page.click('#btn-deployment-cancel');
   await new Promise(r => setTimeout(r, 50));
-  // フィルタ後のスクショも撮る (CLM-2025-1042 で絞り込み)
+  // フィルタ後のスクショも撮る (PA09887766 で絞り込み、claim# 部分一致テストにもなる)
   await page.click('#btn-filter');
   await page.waitForSelector('#filter-modal:not(.hidden)');
-  await page.$eval('#flt-claim', (el, v) => { el.value = v; }, 'CLM-2025-1042');
+  await page.$eval('#flt-claim', (el, v) => { el.value = v; }, 'PA09887766');
   await page.click('#btn-filter-apply');
   await new Promise(r => setTimeout(r, 80));
   await shot(page, 'rich-filtered-claim');

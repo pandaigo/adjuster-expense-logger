@@ -6,261 +6,279 @@ TAP version 13
 # Subtest: normalizeExpense accepts a valid entry
 ok 1 - normalizeExpense accepts a valid entry
   ---
-  duration_ms: 1.4845
+  duration_ms: 2.5049
   type: 'test'
   ...
 # Subtest: normalizeExpense rejects missing date
 ok 2 - normalizeExpense rejects missing date
   ---
-  duration_ms: 0.1745
+  duration_ms: 0.1864
   type: 'test'
   ...
 # Subtest: normalizeExpense rejects malformed date
 ok 3 - normalizeExpense rejects malformed date
   ---
-  duration_ms: 0.1331
+  duration_ms: 0.1231
   type: 'test'
   ...
 # Subtest: normalizeExpense rejects negative amount
 ok 4 - normalizeExpense rejects negative amount
   ---
-  duration_ms: 0.1212
+  duration_ms: 0.1215
   type: 'test'
   ...
 # Subtest: normalizeExpense rejects non-numeric amount
 ok 5 - normalizeExpense rejects non-numeric amount
   ---
-  duration_ms: 0.2239
+  duration_ms: 0.3546
   type: 'test'
   ...
 # Subtest: normalizeExpense rounds amount to 2 decimals
 ok 6 - normalizeExpense rounds amount to 2 decimals
   ---
-  duration_ms: 0.803
+  duration_ms: 0.1545
   type: 'test'
   ...
 # Subtest: normalizeExpense falls back to "other" for unknown category
 ok 7 - normalizeExpense falls back to "other" for unknown category
   ---
-  duration_ms: 0.2301
+  duration_ms: 0.5736
   type: 'test'
   ...
 # Subtest: normalizeExpense preserves miles when non-negative number
 ok 8 - normalizeExpense preserves miles when non-negative number
   ---
-  duration_ms: 0.1351
+  duration_ms: 0.1792
   type: 'test'
   ...
 # Subtest: normalizeExpense drops negative miles
 ok 9 - normalizeExpense drops negative miles
   ---
-  duration_ms: 0.3577
+  duration_ms: 0.3918
   type: 'test'
   ...
 # Subtest: normalizeExpense preserves id when provided
 ok 10 - normalizeExpense preserves id when provided
   ---
-  duration_ms: 0.3872
+  duration_ms: 0.4208
   type: 'test'
   ...
 # Subtest: mileageAmount uses default IRS rate when none provided
 ok 11 - mileageAmount uses default IRS rate when none provided
   ---
-  duration_ms: 0.1925
+  duration_ms: 0.3582
   type: 'test'
   ...
 # Subtest: mileageAmount uses custom rate
 ok 12 - mileageAmount uses custom rate
   ---
-  duration_ms: 0.1043
+  duration_ms: 0.1758
   type: 'test'
   ...
 # Subtest: mileageAmount returns 0 for non-positive miles
 ok 13 - mileageAmount returns 0 for non-positive miles
   ---
-  duration_ms: 0.0803
+  duration_ms: 0.0874
   type: 'test'
   ...
 # Subtest: mileageAmount rounds to 2 decimals
 ok 14 - mileageAmount rounds to 2 decimals
   ---
-  duration_ms: 0.0741
+  duration_ms: 0.0837
   type: 'test'
   ...
 # Subtest: filterExpenses by claim
 ok 15 - filterExpenses by claim
   ---
-  duration_ms: 0.1645
+  duration_ms: 0.2025
   type: 'test'
   ...
 # Subtest: filterExpenses claim is case-insensitive
 ok 16 - filterExpenses claim is case-insensitive
   ---
-  duration_ms: 0.0926
+  duration_ms: 0.0937
   type: 'test'
   ...
 # Subtest: filterExpenses by category
 ok 17 - filterExpenses by category
   ---
-  duration_ms: 0.0923
+  duration_ms: 0.1558
   type: 'test'
   ...
 # Subtest: filterExpenses by date range (inclusive)
 ok 18 - filterExpenses by date range (inclusive)
   ---
-  duration_ms: 0.1103
+  duration_ms: 0.138
   type: 'test'
   ...
 # Subtest: filterExpenses returns [] for null input
 ok 19 - filterExpenses returns [] for null input
   ---
-  duration_ms: 0.6559
+  duration_ms: 1.0499
   type: 'test'
   ...
 # Subtest: totals sums amount and counts entries
 ok 20 - totals sums amount and counts entries
   ---
-  duration_ms: 0.1423
+  duration_ms: 0.2462
   type: 'test'
   ...
 # Subtest: totals returns zeroes for empty input
 ok 21 - totals returns zeroes for empty input
   ---
-  duration_ms: 0.1876
+  duration_ms: 0.3129
   type: 'test'
   ...
 # Subtest: subtotalsByCategory yields zero for unused categories
 ok 22 - subtotalsByCategory yields zero for unused categories
   ---
-  duration_ms: 0.1841
+  duration_ms: 0.2151
   type: 'test'
   ...
 # Subtest: subtotalsByClaim groups empty claim under "(no claim)"
 ok 23 - subtotalsByClaim groups empty claim under "(no claim)"
   ---
-  duration_ms: 0.19
+  duration_ms: 0.177
   type: 'test'
   ...
 # Subtest: toCSV produces header + rows
 ok 24 - toCSV produces header + rows
   ---
-  duration_ms: 0.2435
+  duration_ms: 0.2923
   type: 'test'
   ...
 # Subtest: toCSV escapes quotes and commas
 ok 25 - toCSV escapes quotes and commas
   ---
-  duration_ms: 0.205
+  duration_ms: 0.4639
   type: 'test'
   ...
 # Subtest: parseCSV round-trip preserves data
 ok 26 - parseCSV round-trip preserves data
   ---
-  duration_ms: 0.4671
+  duration_ms: 0.609
   type: 'test'
   ...
 # Subtest: parseCSV drops rows with invalid date
 ok 27 - parseCSV drops rows with invalid date
   ---
-  duration_ms: 0.1369
+  duration_ms: 0.1689
   type: 'test'
   ...
 # Subtest: parseCSV handles empty input
 ok 28 - parseCSV handles empty input
   ---
-  duration_ms: 0.0899
+  duration_ms: 0.1336
   type: 'test'
   ...
 # Subtest: toBackupJSON / parseBackupJSON round-trip
 ok 29 - toBackupJSON / parseBackupJSON round-trip
   ---
-  duration_ms: 0.8068
+  duration_ms: 1.8804
   type: 'test'
   ...
 # Subtest: parseBackupJSON returns empty for malformed JSON
 ok 30 - parseBackupJSON returns empty for malformed JSON
   ---
-  duration_ms: 0.1371
+  duration_ms: 0.4059
   type: 'test'
   ...
 # Subtest: formatAmount adds dollar sign and thousands separator
 ok 31 - formatAmount adds dollar sign and thousands separator
   ---
-  duration_ms: 0.1943
+  duration_ms: 0.4758
   type: 'test'
   ...
 # Subtest: formatAmount handles zero and negatives gracefully
 ok 32 - formatAmount handles zero and negatives gracefully
   ---
-  duration_ms: 0.0892
+  duration_ms: 0.1504
   type: 'test'
   ...
 # Subtest: FREE_LIMIT is 30 (Phase 3 確定値)
 ok 33 - FREE_LIMIT is 30 (Phase 3 確定値)
   ---
-  duration_ms: 0.0739
+  duration_ms: 0.097
   type: 'test'
   ...
 # Subtest: DEFAULT_IRS_RATE matches 2026 federal value
 ok 34 - DEFAULT_IRS_RATE matches 2026 federal value
   ---
-  duration_ms: 0.0768
+  duration_ms: 0.0833
   type: 'test'
   ...
 # Subtest: normalizeExpense rejects amount over MAX_AMOUNT (typo guard)
 ok 35 - normalizeExpense rejects amount over MAX_AMOUNT (typo guard)
   ---
-  duration_ms: 0.1657
+  duration_ms: 0.176
   type: 'test'
   ...
 # Subtest: normalizeExpense accepts MAX_AMOUNT exactly
 ok 36 - normalizeExpense accepts MAX_AMOUNT exactly
   ---
-  duration_ms: 0.1168
+  duration_ms: 0.1415
   type: 'test'
   ...
 # Subtest: subtotalsByClaim case-insensitive aggregation (ABC-1 + abc-1 merge)
 ok 37 - subtotalsByClaim case-insensitive aggregation (ABC-1 + abc-1 merge)
   ---
-  duration_ms: 0.1159
+  duration_ms: 0.3846
   type: 'test'
   ...
 # Subtest: subtotalsByClaim preserves first-seen display casing
 ok 38 - subtotalsByClaim preserves first-seen display casing
   ---
-  duration_ms: 0.1236
+  duration_ms: 0.1319
   type: 'test'
   ...
 # Subtest: parseCSVDetailed reports skipped row count
 ok 39 - parseCSVDetailed reports skipped row count
   ---
-  duration_ms: 0.1282
+  duration_ms: 0.1726
   type: 'test'
   ...
 # Subtest: parseCSVDetailed handles empty input safely
 ok 40 - parseCSVDetailed handles empty input safely
   ---
-  duration_ms: 0.1577
+  duration_ms: 0.2724
   type: 'test'
   ...
 # Subtest: csvRows preserves CR inside quoted memo (Excel round-trip)
 ok 41 - csvRows preserves CR inside quoted memo (Excel round-trip)
   ---
-  duration_ms: 0.1998
+  duration_ms: 1.6421
   type: 'test'
   ...
 # Subtest: mileageAmount with custom rate 0.67 matches 2025 federal value (regression)
 ok 42 - mileageAmount with custom rate 0.67 matches 2025 federal value (regression)
   ---
-  duration_ms: 0.0815
+  duration_ms: 0.1753
   type: 'test'
   ...
-1..42
-# tests 42
+# Subtest: parseCSVDetailed strips UTF-8 BOM (Excel/Sheets save default)
+ok 43 - parseCSVDetailed strips UTF-8 BOM (Excel/Sheets save default)
+  ---
+  duration_ms: 0.2844
+  type: 'test'
+  ...
+# Subtest: filterExpenses claim\# is now partial-match (substring case-insensitive)
+ok 44 - filterExpenses claim\# is now partial-match (substring case-insensitive)
+  ---
+  duration_ms: 0.2134
+  type: 'test'
+  ...
+# Subtest: filterExpenses claim\# partial match works on carrier-style numbers (PA / 23- / ALL- / USAA-)
+ok 45 - filterExpenses claim\# partial match works on carrier-style numbers (PA / 23- / ALL- / USAA-)
+  ---
+  duration_ms: 0.1767
+  type: 'test'
+  ...
+1..45
+# tests 45
 # suites 0
-# pass 42
+# pass 45
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 127.0388
+# duration_ms 174.5536

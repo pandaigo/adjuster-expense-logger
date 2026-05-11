@@ -99,7 +99,7 @@ If category is Mileage **and** Amount is empty or zero **and** Miles is a positi
 ## Pro upgrade
 
 - The upgrade modal title is **Unlock Pro** and the price is **$12.99 one-time**.
-- It lists the Pro features: Unlimited expenses, PDF report, Multiple deployments, Claim # summary.
+- It lists the Pro features: Unlimited expenses, PDF report, Claim # & category summary, Custom IRS mileage rate override.
 - Clicking the **Upgrade — $12.99 one-time** button opens the ExtensionPay payment page.
 - Clicking **Maybe later** closes the modal without changing plan state.
 - Once payment succeeds, `Pro · Unlimited` shows in the footer and the Free 30-cap no longer applies.

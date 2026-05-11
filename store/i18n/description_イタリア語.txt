@@ -18,9 +18,9 @@ Piano Free:
 Piano Pro ($12,99 pagamento unico, senza abbonamento):
 • Spese illimitate
 • Report PDF con subtotali per categoria (formato universale, funziona con qualsiasi società IA)
-• Più deployment in parallelo
-• Vista riepilogo per # di sinistro
-• Calcolo automatico tariffa IRS chilometrica con sovrascrittura personalizzata
+• Vista riepilogo per # di sinistro e categoria (subtotali raggruppati per fatturazione IA)
+• Tariffa IRS chilometrica personalizzabile
+• Modalità scura
 
 Tutto resta sul tuo dispositivo — niente cloud, niente account, niente telemetria. Accedi una volta, registra le spese al volo, esporta quando arriva il giorno di paga.
 
