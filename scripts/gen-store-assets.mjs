@@ -23,35 +23,40 @@ mkdirSync(cwsScreensDir, { recursive: true });
 // プロモタイル 440x280
 // TODO: 拡張ごとにヘッドライン・差し色・サブコピーを編集
 // ============================================================
-// 設計指針 (v6: 「何の拡張か即わかる」明確化、2026-05-13 ユーザー指摘反映):
-// 前案 (v5) は $0.725 が最大文字で「mileage tracker と誤読される」リスクあり。
-// 製品本質は「per diem + hotel + mileage + meals を claim# でまとめる経費ログ全体」。
-// 機能訴求を最大に、IRS rate は補足扱いに降格。
+// 設計指針 (v7: 黄色廃止 + 落ち着いた navy ベース、2026-05-13 ユーザー指摘反映):
+// v6 の情報構造 (製品名→機能→集計軸→数値→ターゲット) は維持。配色だけ変更。
+// - 背景: 暗 navy 単色 (専門業務向けの信頼カラー、CWS 一覧でも視認できる暗色)
+// - 機能訴求: 白文字 32pt + アクセント (per diem などのキーワードに黄色)
+// - 補足: 薄グレー、CTA バッジは黄背景で focal point
 const promoSmallSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280">
-  <rect width="440" height="280" fill="#FFD60A"/>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0B1F3A"/>
+      <stop offset="100%" style="stop-color:#1E3A5F"/>
+    </linearGradient>
+  </defs>
+  <rect width="440" height="280" fill="url(#bg)"/>
 
-  <!-- 上黒帯: 製品名 (タイトル帯) -->
-  <rect x="0" y="0" width="440" height="36" fill="#0A0A0A"/>
-  <text x="220" y="24" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900" fill="#FFD60A" letter-spacing="3">ADJUSTER EXPENSE LOG</text>
+  <!-- 上端: 製品名 -->
+  <text x="32" y="40" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#FCD34D" letter-spacing="2.5">ADJUSTER EXPENSE LOG</text>
 
-  <!-- 下黒帯: 差別化文言 -->
-  <rect x="0" y="244" width="440" height="36" fill="#0A0A0A"/>
-  <text x="220" y="268" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFD60A" letter-spacing="2">CAT-READY · NO SUBSCRIPTION</text>
+  <!-- ヒーロー: 機能訴求 2 行で「何の拡張か」即理解 -->
+  <text x="32" y="86" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.8">Per diem. Mileage.</text>
+  <text x="32" y="120" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.8">Hotel. Meals.</text>
 
-  <!-- ヒーロー: 機能訴求 1 行で「何の拡張か」が即分かるよう最大文字に -->
-  <text x="32" y="86" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900" fill="#0A0A0A" letter-spacing="-1.0">Per diem. Mileage.</text>
-  <text x="32" y="120" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900" fill="#0A0A0A" letter-spacing="-1.0">Hotel. Meals.</text>
+  <!-- 副題: 集計軸を明示 (アクセント色で claim # 強調) -->
+  <text x="32" y="156" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#93C5FD" letter-spacing="0.2" xml:space="preserve">All tagged by <tspan fill="#FCD34D" font-weight="800">claim #</tspan> · Auto-totaled</text>
 
-  <!-- 副題: 集計軸を明示 -->
-  <text x="32" y="154" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#0A0A0A" letter-spacing="0.2">All tagged by claim # · Auto-totaled</text>
+  <!-- 補足: 数値具体性 -->
+  <text x="32" y="184" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#cbd5e1" letter-spacing="0.1">IRS $0.725/mi auto-calc · CSV / PDF export</text>
 
-  <!-- 補足: 数値具体性 (IRS rate を信用ブースターとして小さく) -->
-  <text x="32" y="184" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0A0A0A" letter-spacing="0.1">Mileage auto-calc at IRS $0.725/mi · CSV / PDF export</text>
+  <!-- CTA バッジ: ターゲット明示 + focal point (黄背景 + 黒文字でコントラスト最大) -->
+  <rect x="32" y="208" width="376" height="34" rx="6" fill="#FCD34D"/>
+  <text x="220" y="231" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900" fill="#0A0A0A" letter-spacing="1.5">FOR INDEPENDENT INSURANCE ADJUSTERS</text>
 
-  <!-- 信用シール: For independent adjusters バッジ -->
-  <rect x="32" y="200" width="376" height="30" rx="4" fill="#0A0A0A"/>
-  <text x="220" y="220" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#FFD60A" letter-spacing="1.5">FOR INDEPENDENT INSURANCE ADJUSTERS</text>
+  <!-- 下端: 差別化文言 (オレンジアクセント) -->
+  <text x="220" y="266" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="1.5" xml:space="preserve"><tspan fill="#FF6B4A">CAT-READY</tspan><tspan fill="#cbd5e1"> · NO SUBSCRIPTION</tspan></text>
 </svg>`;
 
 writeFileSync(join(outDir, 'promo-small-440x280.svg'), promoSmallSvg);
@@ -146,34 +151,36 @@ if (!existsSync(screenshotsDir)) {
       const meta = await sharp(srcPath).metadata();
       const cw = Math.min(600, meta.width || 600);
       const ch = Math.min(700, meta.height || 700);
+      // popup を 600px 幅にリサイズ (CWS 縮小表示でも内部テキストが読めるサイズに拡大)
       const popupBuf = await sharp(srcPath)
         .extract({ left: 0, top: 0, width: cw, height: ch })
-        .resize({ width: 520 })
+        .resize({ width: 600 })
         .png()
         .toBuffer();
       const popupMeta = await sharp(popupBuf).metadata();
-      const popupX = 80;
+      const popupX = 30;
       const popupY = 110 + Math.max(0, (660 - (popupMeta.height || 0)) / 2);
       const captionEsc = t.caption.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const callouts = t.callout || [];
-      // 右半分 (x=620..1240) に コールアウト 3 つを縦に並べる
+      // 右半分 (x=660..1240、520px 幅) にコールアウト 3 つ。文字サイズを拡大して
+      // CWS 詳細ページの 640x400 縮小表示でも読めるよう設計 (title 30pt, body 19pt)。
       const calloutSvg = callouts.map((c, idx) => {
-        const cy = 200 + idx * 180;
+        const cy = 210 + idx * 180;
         const titleEsc = c.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         const bodyEsc = c.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        // body を 50 文字程度で折り返し (簡易、句読点で改行)
+        // body を ~40 文字で折り返し (拡大フォントに合わせて行幅を縮小)
         const words = bodyEsc.split(' ');
         const lines = [];
         let line = '';
         for (const w of words) {
-          if ((line + ' ' + w).trim().length > 48) { lines.push(line.trim()); line = w; }
+          if ((line + ' ' + w).trim().length > 40) { lines.push(line.trim()); line = w; }
           else { line += ' ' + w; }
         }
         if (line.trim()) lines.push(line.trim());
         return `
-  <circle cx="640" cy="${cy - 6}" r="6" fill="#FCD34D"/>
-  <text x="660" y="${cy}" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">${titleEsc}</text>
-  ${lines.map((l, li) => `<text x="660" y="${cy + 32 + li * 28}" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">${l}</text>`).join('\n  ')}`;
+  <circle cx="680" cy="${cy - 8}" r="8" fill="#FCD34D"/>
+  <text x="710" y="${cy}" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.3">${titleEsc}</text>
+  ${lines.map((l, li) => `<text x="710" y="${cy + 40 + li * 32}" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">${l}</text>`).join('\n  ')}`;
       }).join('\n');
       const compositeSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800">
@@ -185,7 +192,7 @@ if (!existsSync(screenshotsDir)) {
   </defs>
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
-  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#fff">${captionEsc}</text>
+  <text x="640" y="66" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="800" fill="#fff">${captionEsc}</text>
   ${calloutSvg}
 </svg>`;
       const bgBuffer = await sharp(Buffer.from(compositeSvg)).png().toBuffer();
@@ -242,7 +249,7 @@ if (!existsSync(screenshotsDir)) {
   </defs>
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
-  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#fff">${captionEsc}</text>
+  <text x="640" y="66" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="38" font-weight="800" fill="#fff">${captionEsc}</text>
 </svg>`;
 
     const bgBuffer = await sharp(Buffer.from(compositeSvg)).png().toBuffer();
@@ -275,7 +282,7 @@ if (!existsSync(screenshotsDir)) {
   </defs>
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg-${i + 1})"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
-  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#fff">${captionEsc}</text>
+  <text x="640" y="66" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="38" font-weight="800" fill="#fff">${captionEsc}</text>
   <image xlink:href="${outBaseName}-popup.png" x="${Math.round(popupLeft)}" y="${Math.round(popupTop)}" width="${popupMeta.width}" height="${popupMeta.height}"/>
 </svg>`;
     writeFileSync(join(cwsScreensDir, `${outBaseName}.svg`), svgVersion);

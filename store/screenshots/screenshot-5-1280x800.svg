@@ -3,20 +3,20 @@
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg-5)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
   <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#fff">$12.99 once. One purchase covers every CAT deployment.</text>
-  <image xlink:href="screenshot-5-1280x800-popup.png" x="80" y="137" width="520" height="607"/>
+  <image xlink:href="screenshot-5-1280x800-popup.png" x="30" y="110" width="600" height="700"/>
   
-  <circle cx="640" cy="194" r="6" fill="#FCD34D"/>
-  <text x="660" y="200" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">No subscription</text>
-  <text x="660" y="232" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">One $12.99 charge via ExtensionPay. No renewal,</text>
-  <text x="660" y="260" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">no auto-billing.</text>
+  <circle cx="680" cy="202" r="8" fill="#FCD34D"/>
+  <text x="710" y="210" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.3">No subscription</text>
+  <text x="710" y="250" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">One $12.99 charge via ExtensionPay. No</text>
+  <text x="710" y="282" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">renewal, no auto-billing.</text>
 
-  <circle cx="640" cy="374" r="6" fill="#FCD34D"/>
-  <text x="660" y="380" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Yours on every device</text>
-  <text x="660" y="412" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Sign-in-free. JSON backup moves your data to a</text>
-  <text x="660" y="440" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">new laptop in seconds.</text>
+  <circle cx="680" cy="382" r="8" fill="#FCD34D"/>
+  <text x="710" y="390" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.3">Yours on every device</text>
+  <text x="710" y="430" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Sign-in-free. JSON backup moves your</text>
+  <text x="710" y="462" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">data to a new laptop in seconds.</text>
 
-  <circle cx="640" cy="554" r="6" fill="#FCD34D"/>
-  <text x="660" y="560" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Five Pro features</text>
-  <text x="660" y="592" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Unlimited entries · PDF report · Claim # summary</text>
-  <text x="660" y="620" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">· Custom IRS rate · Dark mode</text>
+  <circle cx="680" cy="562" r="8" fill="#FCD34D"/>
+  <text x="710" y="570" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.3">Five Pro features</text>
+  <text x="710" y="610" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Unlimited entries · PDF report · Claim #</text>
+  <text x="710" y="642" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">summary · Custom IRS rate · Dark mode</text>
 </svg>

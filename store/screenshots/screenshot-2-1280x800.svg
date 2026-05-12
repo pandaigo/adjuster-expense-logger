@@ -3,20 +3,20 @@
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg-2)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
   <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#fff">Filter by claim or category — subtotals on the fly.</text>
-  <image xlink:href="screenshot-2-1280x800-popup.png" x="80" y="137" width="520" height="607"/>
+  <image xlink:href="screenshot-2-1280x800-popup.png" x="30" y="110" width="600" height="700"/>
   
-  <circle cx="640" cy="194" r="6" fill="#FCD34D"/>
-  <text x="660" y="200" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Find any claim fast</text>
-  <text x="660" y="232" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Hyphen / space / case-insensitive — type</text>
-  <text x="660" y="260" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">"PA0988" to find "PA-09887766"</text>
+  <circle cx="680" cy="202" r="8" fill="#FCD34D"/>
+  <text x="710" y="210" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.3">Find any claim fast</text>
+  <text x="710" y="250" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Hyphen / space / case-insensitive — type</text>
+  <text x="710" y="282" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">"PA0988" to find "PA-09887766"</text>
 
-  <circle cx="640" cy="374" r="6" fill="#FCD34D"/>
-  <text x="660" y="380" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Category × claim × date</text>
-  <text x="660" y="412" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Combine filters to bill one carrier for one week</text>
-  <text x="660" y="440" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">of work</text>
+  <circle cx="680" cy="382" r="8" fill="#FCD34D"/>
+  <text x="710" y="390" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.3">Category × claim × date</text>
+  <text x="710" y="430" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Combine filters to bill one carrier for</text>
+  <text x="710" y="462" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">one week of work</text>
 
-  <circle cx="640" cy="554" r="6" fill="#FCD34D"/>
-  <text x="660" y="560" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Totals follow the filter</text>
-  <text x="660" y="592" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">The dollar figure at the top reflects exactly</text>
-  <text x="660" y="620" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">what you see</text>
+  <circle cx="680" cy="562" r="8" fill="#FCD34D"/>
+  <text x="710" y="570" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" letter-spacing="-0.3">Totals follow the filter</text>
+  <text x="710" y="610" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">The dollar figure at the top reflects</text>
+  <text x="710" y="642" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">exactly what you see</text>
 </svg>

@@ -7,6 +7,6 @@
   </defs>
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg-4)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
-  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#fff">Pro PDF report — subtotals by category and claim #.</text>
+  <text x="640" y="66" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="38" font-weight="800" fill="#fff">Pro PDF report — subtotals by category and claim #.</text>
   <image xlink:href="screenshot-4-1280x800-popup.png" x="240" y="110" width="800" height="680"/>
 </svg>
