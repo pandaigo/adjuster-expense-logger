@@ -6,7 +6,8 @@ let state = {
   deployment: { name: '', event: '', start: '', end: '' },
   isPaid: false,
   irsRate: U.DEFAULT_IRS_RATE,
-  filter: {}
+  filter: {},
+  editingId: null // 編集モード時に対象 expense の id を保持。null なら新規追加モード。
 };
 
 const $ = (s) => document.querySelector(s);
@@ -17,10 +18,19 @@ document.addEventListener('DOMContentLoaded', init);
 async function init() {
   await loadData();
   setTodayInForm();
+  applyWindowMode();
   render();
   bindEvents();
   bindStorageSync();
   if (typeof initCrossPromo === 'function') initCrossPromo(SELF_PROMO_ID);
+}
+
+// 既に別 window として開かれている場合は "Open in window" ボタンを隠す (二重起動回避)。
+// URL の ?window=1 で判定。
+function applyWindowMode() {
+  const isWindow = /[?&]window=1\b/.test(location.search);
+  const btn = $('#btn-open-window');
+  if (btn && isWindow) btn.classList.add('hidden');
 }
 
 // 別 popup や別タブからの変更を本 popup に反映 (二重起動 race 対策)。
@@ -122,6 +132,14 @@ function renderList() {
   for (const e of filtered) {
     const li = document.createElement('li');
     li.className = 'expense-item';
+    if (state.editingId === e.id) li.classList.add('editing');
+    // クリックで編集モードに入る button (左半分 + 金額)。a11y 的に <li> 自体は
+    // クリッカブルにせず、内部に明示的な <button> を置くと list rule / nested-interactive を満たす。
+    const editTrigger = document.createElement('button');
+    editTrigger.type = 'button';
+    editTrigger.className = 'expense-edit-trigger';
+    editTrigger.setAttribute('aria-label', 'Edit expense');
+    editTrigger.title = 'Click to edit';
     const left = document.createElement('div');
     left.className = 'left';
     const dateClaim = document.createElement('span');
@@ -137,6 +155,10 @@ function renderList() {
     const amt = document.createElement('span');
     amt.className = 'amount';
     amt.textContent = U.formatAmount(e.amount);
+    editTrigger.appendChild(left);
+    editTrigger.appendChild(amt);
+    editTrigger.addEventListener('click', () => startEdit(e.id));
+
     const del = document.createElement('button');
     del.className = 'del-btn';
     del.type = 'button';
@@ -144,8 +166,8 @@ function renderList() {
     del.title = 'Delete';
     del.textContent = '×';
     del.addEventListener('click', () => handleDelete(e.id));
-    li.appendChild(left);
-    li.appendChild(amt);
+
+    li.appendChild(editTrigger);
     li.appendChild(del);
     list.appendChild(li);
   }
@@ -188,6 +210,21 @@ function bindEvents() {
   $('#btn-deployment-save').addEventListener('click', saveDeployment);
   $('#btn-deployment-cancel').addEventListener('click', () => closeModal('#deployment-modal'));
 
+  // Open in window — popup は他をクリックすると閉じるので、長時間入力時の救済。
+  // chrome.windows.create で popup.html?window=1 を別 window として開く。
+  const btnOpenWindow = $('#btn-open-window');
+  if (btnOpenWindow) {
+    btnOpenWindow.addEventListener('click', () => {
+      chrome.windows.create({
+        url: chrome.runtime.getURL('popup.html?window=1'),
+        type: 'popup',
+        width: 480,
+        height: 720
+      });
+      window.close(); // 元の popup は閉じる (両方残ると storage.onChanged で混乱)
+    });
+  }
+
   // Settings
   $('#btn-settings').addEventListener('click', openSettings);
   $('#btn-settings-save').addEventListener('click', saveSettings);
@@ -212,9 +249,12 @@ function bindEvents() {
 }
 
 function cancelAdd() {
+  state.editingId = null;
   $('#form-fields').classList.add('hidden');
   $('#btn-toggle-add').classList.remove('hidden');
   clearFormFields();
+  updateFormModeBanner();
+  render();
 }
 
 function clearFormFields() {
@@ -227,15 +267,64 @@ function clearFormFields() {
   setTodayInForm();
 }
 
+// 既存 expense を編集モードで開く。
+function startEdit(id) {
+  const exp = state.expenses.find((e) => e.id === id);
+  if (!exp) return;
+  state.editingId = id;
+  // form を表示
+  $('#form-fields').classList.remove('hidden');
+  $('#btn-toggle-add').classList.add('hidden');
+  // 値を入れる
+  $('#f-date').value = exp.date;
+  $('#f-category').value = exp.category || 'per_diem';
+  $('#f-amount').value = exp.amount != null ? String(exp.amount) : '';
+  $('#f-miles').value = exp.miles != null ? String(exp.miles) : '';
+  $('#f-claim').value = exp.claim || '';
+  $('#f-memo').value = exp.memo || '';
+  $('#f-miles').classList.toggle('hidden', exp.category !== 'mileage');
+  updateFormModeBanner();
+  render();
+  // amount にフォーカスを移して typo 修正をすぐ始められるように
+  setTimeout(() => $('#f-amount').focus(), 0);
+}
+
+// form 上部のモード表示 (編集中は "Editing: <date> <category> $<amount>" を表示)。
+function updateFormModeBanner() {
+  let banner = $('#form-mode-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'form-mode-banner';
+    banner.className = 'form-mode-banner hidden';
+    const formFields = $('#form-fields');
+    formFields.insertBefore(banner, formFields.firstChild);
+  }
+  if (state.editingId) {
+    const exp = state.expenses.find((e) => e.id === state.editingId);
+    if (exp) {
+      const label = U.CATEGORY_LABELS[exp.category] || exp.category;
+      banner.textContent = `Editing: ${exp.date} · ${label} · ${U.formatAmount(exp.amount)}`;
+      banner.classList.remove('hidden');
+    }
+  } else {
+    banner.classList.add('hidden');
+  }
+}
+
 async function handleSaveExpense() {
-  if (!state.isPaid && state.expenses.length >= U.FREE_LIMIT) {
+  // 編集モードは Free 上限チェック不要 (件数は増えない)
+  if (!state.editingId && !state.isPaid && state.expenses.length >= U.FREE_LIMIT) {
     showUpgrade();
     return;
   }
   const date = $('#f-date').value;
   const category = $('#f-category').value;
-  let amount = Number($('#f-amount').value);
-  const miles = $('#f-miles').value === '' ? null : Number($('#f-miles').value);
+  // raw 文字列を sanitize して "$1,234.50" や "1,234" を許容する。
+  const amountRaw = $('#f-amount').value;
+  const milesRawStr = $('#f-miles').value;
+  let amount = U.sanitizeNumber(amountRaw);
+  const milesSan = milesRawStr === '' ? null : U.sanitizeNumber(milesRawStr);
+  const miles = milesSan != null && Number.isFinite(milesSan) ? milesSan : null;
   const claim = $('#f-claim').value.trim();
   const memo = $('#f-memo').value.trim();
 
@@ -244,21 +333,45 @@ async function handleSaveExpense() {
     amount = U.mileageAmount(miles, state.irsRate);
   }
 
-  const normalized = U.normalizeExpense({ date, category, amount, miles, claim, memo });
-  if (!normalized) {
-    flash($('#f-amount'));
-    return;
+  // 編集モードなら id / createdAt を維持して上書き、新規ならそのまま push
+  let normalized;
+  if (state.editingId) {
+    const existing = state.expenses.find((e) => e.id === state.editingId);
+    normalized = U.normalizeExpense({
+      id: state.editingId,
+      createdAt: existing && existing.createdAt,
+      date, category, amount, miles, claim, memo
+    });
+    if (!normalized) {
+      flash($('#f-amount'));
+      return;
+    }
+    const idx = state.expenses.findIndex((e) => e.id === state.editingId);
+    if (idx >= 0) state.expenses[idx] = normalized;
+  } else {
+    normalized = U.normalizeExpense({ date, category, amount, miles, claim, memo });
+    if (!normalized) {
+      flash($('#f-amount'));
+      return;
+    }
+    state.expenses.push(normalized);
   }
-  state.expenses.push(normalized);
   await persistExpenses();
-  cancelAdd();
-  render();
+  cancelAdd(); // editingId クリア + form 閉じ + 再描画
 }
 
 async function handleDelete(id) {
   const idx = state.expenses.findIndex((e) => e.id === id);
   if (idx < 0) return;
   state.expenses.splice(idx, 1);
+  // 編集中の expense を削除した場合は編集モードを抜ける
+  if (state.editingId === id) {
+    state.editingId = null;
+    $('#form-fields').classList.add('hidden');
+    $('#btn-toggle-add').classList.remove('hidden');
+    clearFormFields();
+    updateFormModeBanner();
+  }
   await persistExpenses();
   render();
 }

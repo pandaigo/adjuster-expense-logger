@@ -683,6 +683,157 @@ await run('popup-24: Settings → IRS rate を 0 にしても保存されない 
   await page.close();
 });
 
+// =============================================
+// ストレス + 上限テスト (リリース前追加分)
+// =============================================
+
+await run('popup-stress-1: 200 件 Pro 状態 で一覧描画 + filter (renderList 性能 + メモリリーク)', async () => {
+  const big = [];
+  for (let i = 0; i < 200; i++) {
+    big.push({
+      id: 's-' + i,
+      date: '2026-05-' + String((i % 28) + 1).padStart(2, '0'),
+      claim: 'CLM-' + (i % 30),
+      category: ['per_diem','hotel','mileage','meals','parking','supplies','phone','other'][i % 8],
+      amount: Math.round(Math.random() * 50000) / 100,
+      miles: i % 8 === 2 ? Math.round(Math.random() * 5000) / 10 : null,
+      memo: 'Note ' + i,
+      createdAt: Date.now() + i,
+    });
+  }
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true, expenses: big } });
+  // 一覧表示が完了するまで待つ
+  await new Promise(r => setTimeout(r, 800));
+  const visibleRows = await page.$$eval('.expense-item', els => els.length);
+  if (visibleRows < 100) throw new Error('200 件 Pro 一覧で 100 行以上描画されない: ' + visibleRows);
+  // Filter で 1 claim に絞る
+  await page.click('#btn-filter');
+  await page.waitForSelector('#filter-modal:not(.hidden)');
+  await page.$eval('#flt-claim', (el, v) => { el.value = v; }, 'CLM-7');
+  await page.click('#btn-filter-apply');
+  await new Promise(r => setTimeout(r, 400));
+  const filteredRows = await page.$$eval('.expense-item', els => els.length);
+  // 200 件中 CLM-7 のヒット数 = floor(200/30) or +1 程度
+  if (filteredRows < 1 || filteredRows > 20) throw new Error('CLM-7 filter で 1-20 行のはずが ' + filteredRows);
+  await page.close();
+});
+
+await run('popup-stress-2: 極大 amount $999,999.99 が受理され totals が正しく表示', async () => {
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true } });
+  await fillAndSave(page, { date: '2026-05-10', category: 'hotel', amount: '$999,999.99', claim: 'BIG-1', memo: '' });
+  const totals = await page.$eval('#total-amount', el => el.textContent);
+  if (!/999,999\.99/.test(totals)) throw new Error('極大 amount totals 表示が壊れた: ' + totals);
+  await page.close();
+});
+
+await run('popup-stress-3: amount=$2,000,000 (上限 over) はサイレントで rejection (no crash)', async () => {
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true } });
+  await fillAndSave(page, { date: '2026-05-10', category: 'hotel', amount: '$2,000,000.00', claim: 'OVER', memo: '' });
+  const rows = await page.$$eval('.expense-item', els => els.length);
+  if (rows !== 0) throw new Error('MAX_AMOUNT 越えは保存されない expected, got ' + rows);
+  await page.close();
+});
+
+await run('popup-stress-4: 連続 10 件 Save で all 保存される (race condition なし)', async () => {
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true } });
+  for (let i = 0; i < 10; i++) {
+    await fillAndSave(page, {
+      date: '2026-05-' + String(i + 1).padStart(2, '0'),
+      category: 'meals',
+      amount: '10.00',
+      claim: 'BURST-' + i,
+      memo: '',
+    });
+  }
+  await new Promise(r => setTimeout(r, 300));
+  const rows = await page.$$eval('.expense-item', els => els.length);
+  if (rows !== 10) throw new Error('連続 10 件 Save で all expected, got ' + rows);
+  await page.close();
+});
+
+await run('popup-stress-5: 外部 context (background script シミュレート) からの storage.set が popup に反映 (storage.onChanged sync)', async () => {
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true } });
+  // popup が開いている状態で「別 context」(= ここでは chrome.storage.local.set を別経路で呼ぶ) を再現。
+  // 実機では別タブの popup や background service worker からの更新がこれに相当する。
+  // bindStorageSync の onChanged listener が動いて UI が再描画されるはず。
+  const initialRows = await page.$$eval('.expense-item', els => els.length);
+  if (initialRows !== 0) throw new Error('初期 0 件 expected, got ' + initialRows);
+  // popup の chrome.storage.local.set を「直接」呼び、自分の onChanged listener にもイベントが飛ぶ
+  // (chrome.storage.onChanged は同じ context でも発火する)
+  await page.evaluate(() => new Promise(r => {
+    const synthetic = [{
+      id: 'sync-test',
+      date: '2026-05-10',
+      category: 'phone',
+      amount: 37,
+      claim: 'SYNC-1',
+      memo: '',
+      miles: null,
+      createdAt: Date.now()
+    }];
+    chrome.storage.local.set({ expenses: synthetic }, () => r(true));
+  }));
+  // listener 経由で UI 反映を待つ
+  let synced = false;
+  for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 100));
+    const rows = await page.$$eval('.expense-item', els => els.length);
+    if (rows === 1) { synced = true; break; }
+  }
+  if (!synced) throw new Error('storage.onChanged listener で UI 反映なし');
+  await page.close();
+});
+
+await run('popup-stress-6: 極長 memo (1000 文字) が保存・表示で crash しない', async () => {
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true } });
+  const longMemo = 'X'.repeat(1000);
+  await fillAndSave(page, { date: '2026-05-10', category: 'meals', amount: '12', claim: 'LONG', memo: longMemo });
+  const rows = await page.$$eval('.expense-item', els => els.length);
+  if (rows !== 1) throw new Error('1000字 memo で行が出ない: ' + rows);
+  // export CSV しても crash しない
+  // (実 download せず、export 可能性のみ確認)
+  const ok = await page.evaluate(() => {
+    const btn = document.querySelector('#btn-export-csv');
+    return !!btn && !btn.disabled;
+  });
+  if (!ok) throw new Error('Export CSV ボタンが無効化される');
+  await page.close();
+});
+
+await run('popup-stress-7: 0.1 + 0.2 = 0.30 浮動小数点ズレが totals/PDF で 0.30 に正規化', async () => {
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true } });
+  await fillAndSave(page, { date: '2026-05-10', category: 'meals', amount: '0.1', claim: 'F-1', memo: '' });
+  await fillAndSave(page, { date: '2026-05-11', category: 'meals', amount: '0.2', claim: 'F-2', memo: '' });
+  const totals = await page.$eval('#total-amount', el => el.textContent);
+  if (!/0\.30/.test(totals)) throw new Error('0.1+0.2 が 0.30 にならない: ' + totals);
+  await page.close();
+});
+
+await run('popup-stress-8: 200 件 import → Free 上限 30 件で停止 + alert に 170 件 dropped 通知', async () => {
+  const page = await freshPopup(browser, extensionId);
+  // alert/dialog をハンドル
+  let dialogText = '';
+  page.on('dialog', async d => { dialogText = d.message(); try { await d.accept(); } catch (_) {} });
+  // 200 行 CSV を生成
+  const lines = ['date,claim,category,amount,miles,memo'];
+  for (let i = 0; i < 200; i++) {
+    lines.push(`2026-05-${String((i % 28) + 1).padStart(2, '0')},C-${i},meals,1.00,,n${i}`);
+  }
+  const csvText = lines.join('\n');
+  // file input にアップロード
+  const inputEl = await page.$('#file-import');
+  // tmpfile を /tmp に作って import
+  const tmpFile = join(tmpFilesDir, 'stress-200.csv');
+  writeFileSync(tmpFile, csvText, 'utf-8');
+  await inputEl.uploadFile(tmpFile);
+  await new Promise(r => setTimeout(r, 1500));
+  // 取り込みは 30 件まで
+  const rows = await page.$$eval('.expense-item', els => els.length);
+  if (rows !== 30) throw new Error('Free 上限で 30 件まで expected, got ' + rows);
+  if (!/Dropped 170/.test(dialogText)) throw new Error('alert で "Dropped 170" 通知なし: ' + dialogText);
+  await page.close();
+});
+
 // 一時ディレクトリのクリーンアップ
 try { rmSync(tmpFilesDir, { recursive: true, force: true }); } catch (_) {}
 

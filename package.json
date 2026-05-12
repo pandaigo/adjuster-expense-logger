@@ -8,7 +8,11 @@
     "smoke": "node scripts/smoke-test.mjs",
     "test:pure": "node --test tests/pure/expense-utils.test.mjs",
     "e2e": "node scripts/e2e.mjs",
-    "test": "npm run smoke && npm run test:pure && npm run e2e",
+    "e2e:spec": "node scripts/e2e-spec.mjs",
+    "i18n:check": "node scripts/i18n-check.mjs",
+    "a11y": "node scripts/a11y-check.mjs",
+    "test": "npm run smoke && npm run test:pure && npm run e2e && npm run e2e:spec",
+    "audit:release": "npm run smoke && npm run test:pure && npm run i18n:check && npm run e2e && npm run e2e:spec && npm run a11y",
     "zip": "node scripts/zip.mjs",
     "icons": "node scripts/gen-icons.mjs",
     "store-assets": "node scripts/gen-store-assets.mjs",
@@ -16,6 +20,7 @@
     "evidence:shots": "node scripts/save-screenshots.mjs"
   },
   "devDependencies": {
+    "@axe-core/puppeteer": "^4.10.0",
     "puppeteer": "^24.0.0",
     "sharp": "^0.33.0"
   }

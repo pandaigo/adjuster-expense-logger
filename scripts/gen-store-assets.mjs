@@ -72,13 +72,13 @@ const targets = [
   // e2e で撮影した実出力から 5 枚を選定（機能 → 課金順、リッチデータ重視）
   // shot 連番は e2e.mjs のテスト順序に依存。popup-6 (Mileage form shot) を追加したため後続が +1 ずれる。
   // 1 枚目: $1,000+ / 15 entries の使い込まれた感
-  { src: '04-rich-overview.png',          caption: '15 expenses, every claim, every category.',           mode: 'popup' },
+  { src: '04-rich-overview.png',          caption: 'Every expense tagged to a claim — instant totals.',   mode: 'popup' },
   // 2 枚目: claim# フィルタで瞬時に小計
   { src: '06-rich-filtered-claim.png',    caption: 'Filter by claim — instant subtotal per file.',       mode: 'popup' },
   // 3 枚目: deployment 編集モーダル (CAT 名+期間+adjuster を一度で設定)
   { src: '05-rich-deployment-modal.png',  caption: 'One deployment header for every claim — CAT-ready.', mode: 'fullscreen' },
   // 4 枚目: Mileage カテゴリのみ表示、IRS $0.725/mi で自動計算された実金額が並ぶ
-  { src: '07-rich-mileage-only.png',      caption: 'Mileage logs auto-fill at IRS $0.725/mi.',           mode: 'popup' },
+  { src: '07-rich-mileage-only.png',      caption: 'Mileage auto-fills at the 2026 IRS rate ($0.725/mi).',mode: 'popup' },
   // 5 枚目: 課金モーダル
   { src: '10-free-cap-upgrade.png',       caption: '$12.99 once. Yours forever. No subscription.',       mode: 'fullscreen' }
 ];

@@ -22,6 +22,12 @@ header {
   gap: 8px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
 header h1 {
   font-size: 14px;
   font-weight: 700;
@@ -91,7 +97,7 @@ header h1 {
   min-width: 0;
 }
 .form-fields input:focus,
-.form-fields select:focus { outline: 2px solid #4a90d9; outline-offset: -1px; }
+.form-fields select:focus { outline: 2px solid #2563eb; outline-offset: -1px; }
 
 .row-actions { justify-content: flex-end; gap: 8px; }
 
@@ -111,12 +117,48 @@ header h1 {
 }
 
 .expense-item {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
+  align-items: center;
   gap: 6px;
-  padding: 10px 14px;
+  padding: 0;
   border-bottom: 1px solid #f1f5f9;
   font-size: 13px;
+  background: transparent;
+  transition: background 0.1s;
+}
+.expense-item:hover { background: #f8fafc; }
+.expense-item.editing {
+  background: #eff6ff;
+  border-left: 3px solid #2563eb;
+}
+.expense-item.editing .expense-edit-trigger { padding-left: 11px; }
+
+/* 行クリックの編集 trigger。<button> 化して a11y 適合 (list / nested-interactive を回避)。 */
+.expense-edit-trigger {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  padding: 10px 0 10px 14px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.expense-edit-trigger:focus { outline: 2px solid #2563eb; outline-offset: -2px; }
+
+.form-mode-banner {
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  background: #eff6ff;
+  border-left: 3px solid #2563eb;
+  color: #1e3a5f;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 0 4px 4px 0;
 }
 
 .expense-item .left { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -160,7 +202,7 @@ footer {
 .link-btn {
   background: none;
   border: none;
-  color: #4a90d9;
+  color: #2563eb;
   cursor: pointer;
   font-size: 12px;
   padding: 2px 4px;
@@ -174,7 +216,7 @@ footer {
 
 .btn-primary {
   padding: 8px 18px;
-  background: #4a90d9;
+  background: #2563eb;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -237,7 +279,7 @@ footer {
   font-family: inherit;
 }
 .modal-card label input:focus,
-.modal-card label select:focus { outline: 2px solid #4a90d9; outline-offset: -1px; }
+.modal-card label select:focus { outline: 2px solid #2563eb; outline-offset: -1px; }
 
 .settings-section { padding: 6px 0; border-top: 1px solid #f1f5f9; }
 
@@ -274,7 +316,10 @@ footer {
   .form-fields input,
   .form-fields select { background: #1e293b; border-color: #334155; color: #e2e8f0; }
   .expense-item { border-bottom-color: #1e293b; }
+  .expense-item:hover { background: #1e293b; }
+  .expense-item.editing { background: #1e3a5f; border-left-color: #93c5fd; }
   .expense-item .amount { color: #93c5fd; }
+  .form-mode-banner { background: #1e3a5f; color: #cbd5e1; border-left-color: #93c5fd; }
   .expense-item .del-btn { color: #64748b; }
   .expense-item .del-btn:hover { background: #7f1d1d; color: #fca5a5; }
   footer { border-top-color: #1e293b; }

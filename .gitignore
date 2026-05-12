@@ -2,4 +2,7 @@ node_modules/
 *.zip
 test-page.html
 _zip_tmp/
-screenshots/
+# ルート直下の e2e 出力のみ ignore。store/screenshots/ は LP/CWS 用なので track 対象。
+/screenshots/
+/screenshots-spec/
+/a11y-report/

@@ -1327,6 +1327,375 @@ await spec('32', 'manifest.json declares only "storage" in permissions', async (
   await page.close();
 });
 
+// ====================================================================
+// SPEC-33  §"Adding an expense": Amount に "$" prefix がついていても受理される
+// USER_SPEC: "Amount (dollars; receipts and QuickBooks/Excel format are accepted — $120.50 ...)"
+// ====================================================================
+await spec('33', 'Amount accepts "$120.50" (receipt paste)', async () => {
+  const page = await launchPage(browser, extensionId);
+  await addExpense(page, {
+    date: '2026-05-10', category: 'Hotel', amount: '$120.50', claim: 'RECEIPT-1', memo: 'Marriott',
+  });
+  await snap(page, 'spec-33-dollar-prefix');
+  const rows = await countExpenseRows(page);
+  assertEq(rows, 1, 'amount "$120.50" must be saved as a valid expense');
+  const totals = await readTotalsAmount(page);
+  const num = parseFloat((totals || '0').replace(/[$,]/g, ''));
+  assert(Math.abs(num - 120.50) < 0.01,
+    `totals should reflect $120.50 after stripping $, got "${totals}" (${num})`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-34  §"Adding an expense": "$1,234.50" (千の位カンマ付き) を受理
+// ====================================================================
+await spec('34', 'Amount accepts "$1,234.50" (QuickBooks-style)', async () => {
+  const page = await launchPage(browser, extensionId);
+  await addExpense(page, {
+    date: '2026-05-10', category: 'Hotel', amount: '$1,234.50', claim: 'QB-1', memo: 'Big bill',
+  });
+  await snap(page, 'spec-34-thousands-comma');
+  const rows = await countExpenseRows(page);
+  assertEq(rows, 1, '"$1,234.50" must be saved (currency + thousands separator stripped)');
+  const totals = await readTotalsAmount(page);
+  const num = parseFloat((totals || '0').replace(/[$,]/g, ''));
+  assert(Math.abs(num - 1234.50) < 0.01,
+    `totals should be $1,234.50, got "${totals}" (${num})`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-35  §"Filter": claim# 検索は hyphen/space 無視 + 部分一致
+// USER_SPEC: "12345A678 matches a stored 12-345A-678" / "PA0988 matches PA09887766"
+// ====================================================================
+await spec('35', 'Filter claim# ignores hyphens/spaces and does partial match', async () => {
+  const page = await launchPage(browser, extensionId);
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '50', claim: '12-345A-678', memo: '' });
+  await addExpense(page, { date: '2026-05-11', category: 'Meals', amount: '30', claim: 'PA09887766', memo: '' });
+  await addExpense(page, { date: '2026-05-12', category: 'Phone', amount: '10', claim: 'OTHER-999', memo: '' });
+  const rowsAll = await countExpenseRows(page);
+  assertEq(rowsAll, 3, '3 rows expected before filter');
+  // Filter: ハイフン抜きで打って 1 件にヒット
+  await clickByText(page, 'filter');
+  await setFieldByLabel(page, 'claim', '12345A678');
+  await clickByText(page, 'apply');
+  await new Promise(r => setTimeout(r, 300));
+  await snap(page, 'spec-35-filter-hyphen-insensitive');
+  const rowsFiltered1 = await countExpenseRows(page);
+  assertEq(rowsFiltered1, 1, '"12345A678" must match stored "12-345A-678" via hyphen-insensitive compare');
+  // Clear → 部分一致確認
+  await clickByText(page, 'filter');
+  await clickByText(page, 'clear');
+  await new Promise(r => setTimeout(r, 200));
+  await clickByText(page, 'filter');
+  await setFieldByLabel(page, 'claim', 'PA0988');
+  await clickByText(page, 'apply');
+  await new Promise(r => setTimeout(r, 300));
+  const rowsFiltered2 = await countExpenseRows(page);
+  assertEq(rowsFiltered2, 1, '"PA0988" must match stored "PA09887766" via substring');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-36  §"Mileage amount auto-calc": Miles に "2,103" (CAT 長距離 + カンマ) を受理
+// ====================================================================
+await spec('36', 'Miles accepts "2,103" (CAT long-haul with thousands comma)', async () => {
+  const page = await launchPage(browser, extensionId);
+  await openAddForm(page);
+  await setFieldByLabel(page, 'category', 'Mileage');
+  await waitForMilesVisible(page);
+  // Amount は空 → miles から auto-calc
+  await setFieldByLabel(page, 'miles', '2,103');
+  await setFieldByLabel(page, 'claim', 'CAT-LONG');
+  await clickByText(page, 'save', { exact: true });
+  await new Promise(r => setTimeout(r, 500));
+  await snap(page, 'spec-36-miles-comma');
+  const rows = await countExpenseRows(page);
+  assertEq(rows, 1, 'mileage row with Miles="2,103" must save');
+  const totals = await readTotalsAmount(page);
+  const num = parseFloat((totals || '0').replace(/[$,]/g, ''));
+  // 2103 × 0.725 = 1524.675 → round to 1524.68 (4-9 切上げの仕様による）
+  assert(num > 1524 && num < 1525,
+    `Miles=2103 × 0.725 should auto-calc to ~$1,524.68; got "${totals}" (${num})`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-37  §"Export & Import": CSV import が US 日付 "5/12/2026" と "$1,234.50" を受理
+// USER_SPEC: "Dates: YYYY-MM-DD, M/D/YYYY, MM/DD/YYYY ... Amounts: $120.50, 1,234.50, $1,234.50 ..."
+// ====================================================================
+await spec('37', 'CSV import accepts US date "5/12/2026" + currency-formatted amount', async () => {
+  const page = await launchPage(browser, extensionId);
+  // 一時 CSV を作って <input type=file> に流し込む
+  const csvText = [
+    'date,claim,category,amount,miles,memo',
+    '5/12/2026,PA09887766,hotel,"$1,234.50",,Marriott Tampa',
+    '05/13/2026,23-014A789,meals,$45.50,,Cracker Barrel',
+    '5/14/26,USAA-3892hnf,parking,12.00,,',
+  ].join('\n');
+  const tmpCsv = join(dlDir, 'import-fuzz.csv');
+  writeFileSync(tmpCsv, csvText, 'utf-8');
+  // ファイル入力にセット
+  const fileInputHandle = await page.evaluateHandle(() => {
+    const inputs = Array.from(document.querySelectorAll('input[type=file]'));
+    return inputs[0] || null;
+  });
+  assert(fileInputHandle && fileInputHandle.asElement(),
+    'a file input element must exist for Import to work');
+  const fileInput = fileInputHandle.asElement();
+  // Import ボタンを押す前のダイアログハンドラ
+  page.on('dialog', async (d) => { try { await d.accept(); } catch (_) {} });
+  await fileInput.uploadFile(tmpCsv);
+  // 変更イベントを発火させる
+  await page.evaluate(() => {
+    const inp = document.querySelector('input[type=file]');
+    if (inp) inp.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  // import 完了 (alert + render) を待つ。3 行追加が反映されるまでポーリング (CI 安定化)。
+  for (let i = 0; i < 50; i++) {
+    await new Promise(r => setTimeout(r, 100));
+    const n = await countExpenseRows(page);
+    if (n >= 3) break;
+  }
+  await snap(page, 'spec-37-csv-import-us-fmt');
+  const rows = await countExpenseRows(page);
+  assertEq(rows, 3,
+    'CSV import with US dates + currency-formatted amounts must produce 3 rows');
+  // totals = 1234.50 + 45.50 + 12.00 = 1292.00
+  const totals = await readTotalsAmount(page);
+  const num = parseFloat((totals || '0').replace(/[$,]/g, ''));
+  assert(Math.abs(num - 1292) < 0.5,
+    `totals after import should be ~$1,292.00; got "${totals}" (${num})`);
+  // claim# が正しく取り込まれているか (1 つだけ確認)
+  const visible = await getVisibleText(page);
+  assert(/PA09887766/.test(visible),
+    'imported claim "PA09887766" must appear in the list');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-38  §"Adding an expense": Date input が 5 桁年を許さない (min/max 2000-2099)
+// ====================================================================
+await spec('38', 'Date inputs have min=2000-01-01 / max=2099-12-31 (no 5-digit year)', async () => {
+  const page = await launchPage(browser, extensionId);
+  // form を開く + filter + deployment を順に開いて全 date input の min/max を検査
+  await openAddForm(page);
+  const dateAttrs = await page.$$eval('input[type=date]', els => els.map(el => ({
+    id: el.id,
+    min: el.getAttribute('min'),
+    max: el.getAttribute('max'),
+  })));
+  // 少なくとも f-date には min/max 属性があるはず
+  const fDate = dateAttrs.find(d => d.id === 'f-date');
+  assert(fDate, 'f-date input must exist');
+  assertEq(fDate.min, '2000-01-01', 'f-date.min must be 2000-01-01');
+  assertEq(fDate.max, '2099-12-31', 'f-date.max must be 2099-12-31');
+  await snap(page, 'spec-38-date-min-max');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-39  §"Adding an expense": Claim # の placeholder にカテゴリ説明が含まれる
+// USER_SPEC: "the case ID your IA company assigned (e.g., PA09887766...)"
+// ====================================================================
+await spec('39', 'Claim # placeholder includes an example to clarify purpose', async () => {
+  const page = await launchPage(browser, extensionId);
+  await openAddForm(page);
+  const ph = await page.$eval('#f-claim', el => el.placeholder);
+  await snap(page, 'spec-39-claim-placeholder');
+  assert(/e\.g\.|example|case id|ia company/i.test(ph),
+    `Claim # placeholder should hint what to enter (got "${ph}")`);
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-40  §"Settings": IRS rate に help text が表示される
+// ====================================================================
+await spec('40', 'Settings shows help text describing the IRS mileage rate', async () => {
+  const page = await launchPage(browser, extensionId);
+  await clickByText(page, '⚙', { tag: 'button' });
+  await page.waitForFunction(() => {
+    const m = document.querySelector('#settings-modal');
+    return m && !m.classList.contains('hidden');
+  }, { timeout: 3000 }).catch(() => {});
+  await snap(page, 'spec-40-settings-help');
+  const txt = await getVisibleText(page);
+  // help text に "miles × this rate" もしくは equivalent な記述
+  assert(/miles\s*[×x*]\s*(this\s*)?rate|auto-calculate/i.test(txt),
+    'Settings modal should explain that Mileage = miles × rate. Visible: ' + txt.substring(0, 400));
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-42  §"The expense list": 行クリックで Add form が値プリフィルで開く
+// ====================================================================
+await spec('42', 'Clicking a row opens the edit form pre-filled with the expense values', async () => {
+  const page = await launchPage(browser, extensionId);
+  await addExpense(page, {
+    date: '2026-05-10', category: 'Hotel', amount: '120.50',
+    claim: 'EDIT-1', memo: 'Original memo',
+  });
+  // 行をクリック (× 削除ボタンではない側)。実装は <button.expense-edit-trigger> でも
+  // <li role=button> でも仕様的に同等なので、× 以外の clickable をクリックする。
+  await page.evaluate(() => {
+    const item = document.querySelector('.expense-item');
+    if (!item) return;
+    const trigger = item.querySelector('button:not(.del-btn), [role=button]:not(.del-btn)') || item;
+    trigger.click();
+  });
+  await new Promise(r => setTimeout(r, 300));
+  await snap(page, 'spec-42-edit-prefilled');
+  // form が visible
+  const formOpen = await page.evaluate(formOpenScript());
+  assert(formOpen, 'edit click must open the form (Save+Cancel visible)');
+  // 値が入っている
+  const claim = await page.$eval('#f-claim', el => el.value);
+  assertEq(claim, 'EDIT-1', 'Claim # must be pre-filled with the row\'s value');
+  const memo = await page.$eval('#f-memo', el => el.value);
+  assertEq(memo, 'Original memo', 'Memo must be pre-filled');
+  // banner が "Editing:" を含む
+  const visible = await getVisibleText(page);
+  assert(/editing\s*:/i.test(visible),
+    'Banner "Editing: ..." must be visible in edit mode. Visible: ' + visible.substring(0, 300));
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-43  §"The expense list": 編集 Save で行が上書きされ、件数は変わらない
+// ====================================================================
+await spec('43', 'Saving an edit overwrites the row, count stays the same', async () => {
+  const page = await launchPage(browser, extensionId);
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '100', claim: 'EDIT-A', memo: '' });
+  await addExpense(page, { date: '2026-05-11', category: 'Meals', amount: '20',  claim: 'EDIT-B', memo: '' });
+  const before = await countExpenseRows(page);
+  assertEq(before, 2, 'precondition: 2 rows');
+  // 1 つ目を編集 (EDIT-A 行の編集 trigger をクリック)
+  await page.evaluate(() => {
+    const items = Array.from(document.querySelectorAll('.expense-item'));
+    const target = items.find(li => li.innerText.includes('EDIT-A'));
+    if (!target) return;
+    const trigger = target.querySelector('button:not(.del-btn), [role=button]:not(.del-btn)') || target;
+    trigger.click();
+  });
+  await new Promise(r => setTimeout(r, 200));
+  // amount を変更
+  await page.evaluate(() => {
+    const el = document.querySelector('#f-amount');
+    el.value = '999.99';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await clickByText(page, 'save', { exact: true });
+  await new Promise(r => setTimeout(r, 400));
+  await snap(page, 'spec-43-after-edit-save');
+  const after = await countExpenseRows(page);
+  assertEq(after, 2, 'row count must NOT change after edit save');
+  const visible = await getVisibleText(page);
+  assert(/999\.99/.test(visible), 'updated amount $999.99 must appear in the list');
+  // 元の $100 は EDIT-A 行から消えているはず
+  const stillOld = await page.evaluate(() => {
+    const item = Array.from(document.querySelectorAll('.expense-item'))
+      .find(li => li.innerText.includes('EDIT-A'));
+    return item ? item.innerText : '';
+  });
+  assert(/999\.99/.test(stillOld), 'EDIT-A row should now display $999.99');
+  assert(!/\$100\.00/.test(stillOld), 'EDIT-A row must not show the old $100');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-44  §"The expense list": 編集 Cancel で値は元のまま、件数も変わらない
+// ====================================================================
+await spec('44', 'Cancelling an edit discards changes and keeps original values', async () => {
+  const page = await launchPage(browser, extensionId);
+  await addExpense(page, { date: '2026-05-10', category: 'Hotel', amount: '100', claim: 'CANCEL-1', memo: 'keep' });
+  // 行クリックで編集モード
+  await page.evaluate(() => {
+    const item = document.querySelector('.expense-item');
+    if (!item) return;
+    const trigger = item.querySelector('button:not(.del-btn), [role=button]:not(.del-btn)') || item;
+    trigger.click();
+  });
+  await new Promise(r => setTimeout(r, 200));
+  // 値を変更してから Cancel
+  await page.evaluate(() => {
+    const el = document.querySelector('#f-amount');
+    el.value = '7777';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await clickByText(page, 'cancel', { exact: true });
+  await new Promise(r => setTimeout(r, 200));
+  await snap(page, 'spec-44-after-cancel');
+  const rows = await countExpenseRows(page);
+  assertEq(rows, 1, 'row count stays at 1');
+  const visible = await getVisibleText(page);
+  assert(/\$100\.00/.test(visible), 'original $100 must remain after Cancel');
+  assert(!/7777/.test(visible), 'edited amount $7777 must NOT appear after Cancel');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-45  §"The expense list": Free 30 件 + 編集は Upgrade modal を出さない
+// ====================================================================
+await spec('45', 'Editing at Free 30/30 cap does not trigger Upgrade modal', async () => {
+  // 30 件 preload で Free 上限ぎりぎり
+  const arr = [];
+  for (let i = 0; i < 30; i++) {
+    arr.push({
+      id: 'cap-' + i, date: '2026-05-10', category: 'meals',
+      amount: 1, claim: 'C-' + i, memo: '', miles: null,
+      createdAt: Date.now() + i
+    });
+  }
+  const page = await launchPage(browser, extensionId);
+  await page.evaluate((items) => new Promise(r => chrome.storage.local.set({ expenses: items }, () => r())), arr);
+  await page.reload();
+  await new Promise(r => setTimeout(r, 400));
+  // 1 件目を編集モードで開く
+  await page.evaluate(() => {
+    const item = document.querySelector('.expense-item');
+    if (!item) return;
+    const trigger = item.querySelector('button:not(.del-btn), [role=button]:not(.del-btn)') || item;
+    trigger.click();
+  });
+  await new Promise(r => setTimeout(r, 200));
+  await page.evaluate(() => {
+    const el = document.querySelector('#f-amount');
+    el.value = '2.50';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await clickByText(page, 'save', { exact: true });
+  await new Promise(r => setTimeout(r, 400));
+  await snap(page, 'spec-45-edit-at-cap');
+  const upgradeOpen = await pageHasText(page, 'Unlock Pro');
+  assert(!upgradeOpen,
+    'Editing at Free 30/30 must NOT open Upgrade modal (USER_SPEC §The expense list: cap does not apply on edit)');
+  // 30 件のまま
+  const rows = await countExpenseRows(page);
+  assertEq(rows, 30, 'row count remains 30 (edit, not add)');
+  await page.close();
+});
+
+// ====================================================================
+// SPEC-41  §"Open in window": header に "Open in window" 相当のボタンがある
+// ====================================================================
+await spec('41', 'Header has an "Open in window" icon button', async () => {
+  const page = await launchPage(browser, extensionId);
+  await snap(page, 'spec-41-open-window-btn');
+  // ボタンが存在し、可視であること (aria-label か title に "window" が含まれる)
+  const found = await page.evaluate(() => {
+    const btns = Array.from(document.querySelectorAll('button'));
+    return btns.some(b => {
+      const aria = (b.getAttribute('aria-label') || '').toLowerCase();
+      const ttl = (b.title || '').toLowerCase();
+      const cs = getComputedStyle(b);
+      const visible = cs.display !== 'none' && cs.visibility !== 'hidden' && b.offsetParent !== null;
+      return visible && (aria.includes('window') || ttl.includes('window'));
+    });
+  });
+  assert(found, 'a button whose aria-label/title mentions "window" must be visible in the popup header');
+  await page.close();
+});
+
 // ---------------- 集計 ----------------
 await browser.close();
 try { rmSync(userDataDir, { recursive: true, force: true }); } catch (_) {}

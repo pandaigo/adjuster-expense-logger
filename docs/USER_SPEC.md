@@ -12,12 +12,16 @@ All data is stored locally on the device. There is no account, no cloud, and no 
 
 When the user clicks the extension icon, the popup opens with these regions, top-to-bottom:
 
-1. **Header** — title "Adjuster Expense Logger" plus a gear icon (Settings).
+1. **Header** — title "Adjuster Expense Logger" plus an "Open in window" icon (⤢) and a gear icon (Settings).
 2. **Deployment bar** — shows the current deployment name and date range. An "Edit" link opens the deployment modal.
 3. **Totals bar** — shows the total amount and entry count for the currently filtered view.
 4. **Add form** — a "+ Add expense" button that expands an inline form.
 5. **Expense list** — rows of saved expenses, newest first.
 6. **Footer** — Export CSV, Export PDF, Import buttons, and a quota indicator.
+
+### Open in window (avoiding Chrome's popup auto-close)
+
+Chrome popups close whenever the user clicks anywhere else on the page. For long entry sessions (60+ items after a CAT deployment), the header "Open in window" icon (⤢) re-opens the same UI as a standalone window that stays open until the user closes it. The two views share storage, so an expense saved in either reflects in the other. The icon is hidden inside the standalone window itself.
 
 ## Deployment information
 
@@ -29,12 +33,12 @@ When the user clicks the extension icon, the popup opens with these regions, top
 ## Adding an expense
 
 - The "+ Add expense" button reveals an inline form with these fields:
-  - Date (defaults to today's date)
+  - Date (defaults to today's date; the year picker is restricted to 2000-2099 so accidental 5-digit years cannot be entered)
   - Category — Per diem, Hotel, Mileage, Meals, Parking, Supplies, Phone, Other
-  - Amount (number, dollars)
-  - Claim # (free text)
+  - Amount (dollars; receipts and QuickBooks/Excel format are accepted — `$120.50`, `1,234.50`, and `$1,234.50` all work)
+  - Claim # — the case ID your IA company assigned (e.g., `PA09887766`, `12-345A-678`, `23-014A789`). The placeholder shows an example.
   - Memo (free text, optional)
-- When the user picks **Mileage** as the category, an extra **Miles** input appears.
+- When the user picks **Mileage** as the category, an extra **Miles** input appears (commas accepted — `2,103` works for long CAT drives).
 - Clicking **Save** validates and appends the expense to the list.
 - Clicking **Cancel** discards the input and collapses the form back to just the "+ Add expense" button.
 
@@ -57,6 +61,7 @@ If category is Mileage **and** Amount is empty or zero **and** Miles is a positi
 - Rows are sorted newest-first (by date, then insertion order).
 - When the list is empty, an "No expenses yet. Tap + Add expense to log your first one." message replaces the list.
 - Clicking the × on a row removes that entry from the list and updates totals immediately.
+- **Editing a row**: clicking anywhere on a row (other than ×) opens the Add form pre-filled with that expense's values. A banner at the top reads `Editing: <date> · <category> · $<amount>` and the row is highlighted. Clicking **Save** overwrites the existing entry (the row count does not change); clicking **Cancel** discards the edit. The Free 30-entry cap does not apply when editing, only when adding new entries. Deleting the row while editing exits edit mode automatically.
 
 ## Totals
 
@@ -68,14 +73,14 @@ If category is Mileage **and** Amount is empty or zero **and** Miles is a positi
 
 - Clicking **Filter** in the totals bar opens a modal with: Claim #, Category, From (date), To (date).
 - Clicking **Apply** restricts both the list and the totals to entries matching all non-empty filters.
-- Claim # matching is case-insensitive.
+- Claim # matching is case-insensitive **and ignores hyphens / spaces** — `12345A678` matches a stored `12-345A-678`, and partial matches work too (`PA0988` matches `PA09887766`).
 - Date matching is inclusive — entries on `From` and `To` are included.
 - Clicking **Clear** removes all filters and shows everything.
 
 ## Settings
 
 - The gear icon in the header opens a Settings modal.
-- The IRS mileage rate input lets the user override the default 0.725 (a custom value persists for future Mileage auto-calcs).
+- The IRS mileage rate input lets the user override the default 0.725 (a custom value persists for future Mileage auto-calcs). A help line under the field explains: the IRS publishes a standard business mileage rate every December; Mileage entries auto-calculate Amount as `miles × this rate`. The 2026 default is $0.725/mi.
 - The settings modal also shows whether the plan is Free or Pro.
 
 ## Export & Import
@@ -90,6 +95,12 @@ If category is Mileage **and** Amount is empty or zero **and** Miles is a positi
 - **Import** accepts `.csv` or `.json` files. CSV rows are merged into the existing list. JSON backup files restore both expenses and deployment information (deployment is only restored if no deployment is currently set).
 - Imported entries always get a fresh ID if they would collide with an existing one.
 - The download filename is `adjuster-expenses_<event-slug>_<YYYY-MM-DD>.csv|pdf|json`.
+- CSV import is forgiving with formats real adjusters get from third-party tools:
+  - **Dates**: `YYYY-MM-DD`, `M/D/YYYY`, `MM/DD/YYYY`, `M/D/YY`, `D-MMM-YYYY` are all accepted (Excel / Google Sheets / QuickBooks / Crawford monthly statements).
+  - **Amounts**: `$120.50`, `1,234.50`, `$1,234.50`, `120.50 USD` are all accepted — currency symbols and thousands separators are stripped before storage.
+  - **Miles**: comma-separated values like `2,103` are accepted.
+  - **UTF-8 BOM**: Excel-saved CSVs starting with a byte-order mark are read correctly.
+- When some CSV rows are skipped (e.g., missing date, invalid amount), the import summary alert reports how many were imported and how many were skipped — no silent data loss.
 
 ## Free / Pro quota indicator
 
@@ -112,7 +123,6 @@ If category is Mileage **and** Amount is empty or zero **and** Miles is a positi
 ## Permissions used
 
 - `storage` — to save expenses, deployment, IRS rate, and paid state locally.
-- `downloads` — to write the user-initiated CSV / PDF exports to the local Downloads folder.
-- `host_permissions: https://extensionpay.com/*` — to receive the payment-completed signal.
+- `content_scripts` on `https://extensionpay.com/*` — to receive the payment-completed signal. The ExtPay content script runs only on the ExtensionPay checkout page.
 
-There is no other host access, no remote code, and no telemetry.
+CSV / PDF exports are written using a Blob URL + `<a download>` click, which does not require the `downloads` permission. There is no other host access, no remote code, and no telemetry.

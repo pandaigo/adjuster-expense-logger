@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Adjuster Expense Logger</title>
   <link rel="stylesheet" href="popup.css">
   <link rel="stylesheet" href="cross-promo.css">
 </head>
 <body>
-  <div id="main-view">
+  <main id="main-view" aria-label="Adjuster Expense Logger">
     <header>
       <div class="header-left">
         <img src="icons/icon48.png" alt="" width="24" height="24">
         <h1>Adjuster Expense Logger</h1>
       </div>
-      <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings">⚙</button>
+      <div class="header-actions">
+        <!-- popup は他の場所をクリックすると閉じる Chrome の仕様。長時間入力時は別ウィンドウに切り出せる。 -->
+        <button id="btn-open-window" class="icon-btn" title="Open in window (so the popup doesn't close while you work)" aria-label="Open in window">⤢</button>
+        <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings">⚙</button>
+      </div>
     </header>
 
     <div id="deployment-bar" class="deployment-bar">
@@ -36,7 +41,7 @@
       <button id="btn-toggle-add" class="btn-primary btn-wide">+ Add expense</button>
       <div id="form-fields" class="form-fields hidden">
         <div class="row">
-          <input type="date" id="f-date" aria-label="Date">
+          <input type="date" id="f-date" aria-label="Date" min="2000-01-01" max="2099-12-31">
           <select id="f-category" aria-label="Category">
             <option value="per_diem">Per diem</option>
             <option value="hotel">Hotel</option>
@@ -49,11 +54,13 @@
           </select>
         </div>
         <div class="row">
-          <input type="number" id="f-amount" placeholder="$ Amount" step="0.01" min="0" aria-label="Amount">
-          <input type="number" id="f-miles" placeholder="Miles" step="0.1" min="0" class="hidden" aria-label="Miles">
+          <!-- type=text + inputmode=decimal: 領収書/QuickBooks の "$1,234.50" を貼り付けても弾かれない (sanitizeNumber が後段で strip)。
+               type=number だと $ や , を入れた時点で .value が空になり、saveが失敗していた。 -->
+          <input type="text" id="f-amount" placeholder="$ Amount" inputmode="decimal" autocomplete="off" aria-label="Amount">
+          <input type="text" id="f-miles" placeholder="Miles" inputmode="decimal" autocomplete="off" class="hidden" aria-label="Miles">
         </div>
         <div class="row">
-          <input type="text" id="f-claim" placeholder="Claim #" aria-label="Claim number">
+          <input type="text" id="f-claim" placeholder="Claim # (e.g., PA09887766 — your IA company's case ID)" aria-label="Claim number" autocomplete="off">
         </div>
         <div class="row">
           <input type="text" id="f-memo" placeholder="Memo (optional)" aria-label="Memo">
@@ -81,7 +88,7 @@
       <input type="file" id="file-import" accept=".csv,.json" hidden>
       <div id="quota-info" class="quota-info"></div>
     </footer>
-  </div>
+  </main>
 
   <!-- Filter modal -->
   <div id="filter-modal" class="modal hidden">
@@ -104,10 +111,10 @@
         </select>
       </label>
       <label>From
-        <input type="date" id="flt-from">
+        <input type="date" id="flt-from" min="2000-01-01" max="2099-12-31">
       </label>
       <label>To
-        <input type="date" id="flt-to">
+        <input type="date" id="flt-to" min="2000-01-01" max="2099-12-31">
       </label>
       <div class="row row-actions">
         <button id="btn-filter-clear" class="btn-secondary">Clear</button>
@@ -127,10 +134,10 @@
         <input type="text" id="dep-event" placeholder="Hurricane Helene 2025">
       </label>
       <label>Start date
-        <input type="date" id="dep-start">
+        <input type="date" id="dep-start" min="2000-01-01" max="2099-12-31">
       </label>
       <label>End date
-        <input type="date" id="dep-end">
+        <input type="date" id="dep-end" min="2000-01-01" max="2099-12-31">
       </label>
       <div class="row row-actions">
         <button id="btn-deployment-cancel" class="btn-secondary">Cancel</button>
@@ -145,7 +152,7 @@
       <h2>Settings</h2>
       <label>IRS mileage rate
         <input type="number" id="set-irs-rate" step="0.001" min="0" placeholder="0.725">
-        <span class="muted small">2026 federal: $0.725/mi</span>
+        <span class="muted small">The IRS standard mileage rate the U.S. government publishes each December for business driving. When you log a Mileage entry, your Amount is auto-calculated as <strong>miles × this rate</strong>. 2026 rate: $0.725/mi. Override here if the IRS updates it.</span>
       </label>
       <div class="settings-section">
         <p id="settings-paid-status" class="muted small"></p>

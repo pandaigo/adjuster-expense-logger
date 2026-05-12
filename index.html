@@ -3,31 +3,271 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EXTENSION_NAME</title>
+  <title>Adjuster Expense Logger — Per Diem &amp; Mileage Tracker for Independent Insurance Adjusters</title>
+  <meta name="description" content="Chrome extension that logs per diem, hotel, mileage, meals, and supplies by claim number for U.S. independent insurance adjusters on CAT deployments. CSV / PDF export for IA billing and Schedule C taxes. One-time $12.99, no subscription.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Adjuster Expense Logger — Per Diem &amp; Mileage Tracker">
+  <meta property="og:description" content="Log every per diem, hotel, mileage trip, meal, and supply by claim number. Export CSV for IA billing and Schedule C. One-time $12.99.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pandaigo.github.io/adjuster-expense-logger/">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 60px 20px;
-      color: #1a1a2e;
-      text-align: center;
-      line-height: 1.7;
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --ink: #1a1a2e;
+      --muted: #64748b;
+      --bg-soft: #f8fafc;
+      --border: #e2e8f0;
     }
-    h1 { font-size: 22px; margin-bottom: 8px; }
-    p { color: #666; font-size: 15px; }
-    a { color: #4a90d9; text-decoration: none; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.6;
+      background: #fff;
+    }
+    a { color: var(--blue); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    .links { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    header.hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #5b4fcf 100%);
+      color: #fff;
+      padding: 64px 0 56px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 800;
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+    .hero .tagline {
+      font-size: 18px;
+      opacity: 0.92;
+      margin: 0 0 28px;
+      max-width: 620px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta {
+      display: inline-block;
+      background: #fff;
+      color: var(--blue-dark);
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    }
+    .cta:hover { text-decoration: none; background: #eff6ff; }
+    .hero .price-line {
+      margin-top: 14px;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    /* Sections */
+    section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+    section h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 24px;
+      text-align: center;
+    }
+
+    /* Features grid */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg-soft);
+      padding: 24px 22px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .feature-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--blue-dark);
+    }
+    .feature-card p { margin: 0; font-size: 14px; color: var(--muted); }
+
+    /* Plan comparison */
+    .plans {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .plan {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+    }
+    .plan.pro { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue) inset; }
+    .plan h3 { margin: 0 0 4px; font-size: 18px; }
+    .plan .price { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+    .plan ul { margin: 0; padding-left: 18px; font-size: 14px; }
+    .plan li { margin-bottom: 6px; }
+    @media (max-width: 600px) { .plans { grid-template-columns: 1fr; } }
+
+    /* Use cases */
+    .usecase-list { list-style: none; padding: 0; max-width: 640px; margin: 0 auto; }
+    .usecase-list li {
+      padding: 14px 18px;
+      border-left: 3px solid var(--blue);
+      background: var(--bg-soft);
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    /* Screenshot */
+    .shot {
+      max-width: 720px;
+      margin: 0 auto;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .shot img { display: block; width: 100%; height: auto; }
+
+    /* Disclaimer + footer */
+    .disclaimer {
+      max-width: 720px;
+      margin: 0 auto;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--bg-soft);
+      padding: 18px 20px;
+      border-radius: 8px;
+      border-left: 3px solid var(--muted);
+    }
+    footer {
+      padding: 32px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    footer .links a { margin: 0 10px; }
   </style>
 </head>
 <body>
-  <h1>EXTENSION_NAME</h1>
-  <p>TODO_TAGLINE</p>
-  <div class="links">
-    <a href="https://chromewebstore.google.com/detail/EXTENSION_ID">Install from Chrome Web Store</a>
-    <a href="store/privacy-policy.html">Privacy Policy</a>
-    <a href="mailto:microforge.hq@gmail.com">Contact Support</a>
+
+<header class="hero">
+  <div class="container">
+    <h1>Adjuster Expense Logger</h1>
+    <p class="tagline">Per diem, hotel, mileage, and meals — logged by claim number, ready for IA billing and Schedule C taxes. Built for U.S. independent insurance adjusters on CAT deployments.</p>
+    <a class="cta" href="https://chromewebstore.google.com/search/adjuster%20expense%20logger">Install from Chrome Web Store</a>
+    <div class="price-line">$12.99 one-time · No subscription · Data stays on your device</div>
   </div>
+</header>
+
+<section>
+  <div class="container">
+    <h2>What it does</h2>
+    <div class="features">
+      <div class="feature-card">
+        <h3>One claim, one tag</h3>
+        <p>Every per diem, hotel night, mileage trip, meal, parking fee, supply, and phone bill gets tagged to the IA company's claim number. Subtotal per claim instantly.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Mileage auto-calc</h3>
+        <p>Type the miles, pick the Mileage category — the dollar amount is auto-filled at the 2026 IRS standard rate of $0.725/mi. Override the rate in Settings when the IRS updates it.</p>
+      </div>
+      <div class="feature-card">
+        <h3>CSV &amp; PDF export</h3>
+        <p>Export the filtered view as CSV for QuickBooks / Excel / accountant handoff (Free). Pro adds a PDF report with per-category and per-claim subtotals — universal format that works for any IA firm filing.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Receipts, the way they come</h3>
+        <p>Paste <code>$1,234.50</code> or <code>1,234.50</code> straight from a Marriott receipt or QuickBooks CSV. Dollar signs, thousands separators, and US date formats (<code>5/12/2026</code>) are all accepted.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Deployment header</h3>
+        <p>Adjuster name, CAT event ("Hurricane Helene 2025"), and start / end dates appear on every export. Auditors and IA companies get the context they need on page one.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Your data, locally</h3>
+        <p>Everything is stored in <code>chrome.storage.local</code> on your device. No account login, no cloud sync, no analytics. The only outbound connection is to ExtensionPay when you choose to upgrade.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Free vs Pro</h2>
+    <div class="plans">
+      <div class="plan">
+        <h3>Free</h3>
+        <div class="price">$0 — log up to 30 expenses</div>
+        <ul>
+          <li>All 8 categories (per diem, hotel, mileage, meals, parking, supplies, phone, other)</li>
+          <li>Claim # tagging and filtering</li>
+          <li>CSV import &amp; export — full data portability</li>
+          <li>JSON backup for device switching</li>
+        </ul>
+      </div>
+      <div class="plan pro">
+        <h3>Pro — $12.99 one-time</h3>
+        <div class="price">No subscription. No renewal. Yours forever.</div>
+        <ul>
+          <li>Unlimited expenses</li>
+          <li>PDF report with subtotals by category and claim #</li>
+          <li>Custom IRS mileage rate override</li>
+          <li>Dark mode</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Built for</h2>
+    <ul class="usecase-list">
+      <li><strong>Independent adjusters (IAs)</strong> deployed by Eberl, Crawford, Pilot, Worley, or similar IA firms during hurricane / hail / wildfire / freeze events.</li>
+      <li><strong>Daily-rate billers</strong> who need to invoice the IA company by claim with per-diem and mileage subtotals at the end of a deployment.</li>
+      <li><strong>Schedule C filers</strong> tracking business mileage and expenses for U.S. self-employment tax records.</li>
+      <li><strong>Multi-claim CAT teams</strong> handling 5–12 claims a day where Excel rebuilds eat hours every week.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Looks like this</h2>
+    <div class="shot">
+      <img src="store/screenshots/screenshot-1-1280x800.png" alt="Adjuster Expense Logger popup showing expenses tagged by claim number">
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <p class="disclaimer">
+      <strong>Disclaimer.</strong> Adjuster Expense Logger is a personal record-keeping tool. It does not provide tax, accounting, or legal advice. Verify exported data with your CPA, IA company, and current IRS rules before relying on it for tax filings or billing submissions. The IRS standard mileage rate is published each December and may change year over year; the 2026 rate is $0.725/mi.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="links">
+      <a href="store/privacy-policy.html">Privacy Policy</a>
+      <a href="https://chromewebstore.google.com/search/adjuster%20expense%20logger">Chrome Web Store</a>
+      <a href="mailto:microforge.hq@gmail.com">Contact Support</a>
+    </div>
+    <p>© 2026 microforge · Available in English, Spanish, Portuguese, German, French, Italian, Japanese, Korean, Simplified Chinese</p>
+  </div>
+</footer>
+
 </body>
 </html>

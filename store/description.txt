@@ -2,22 +2,23 @@
 ストア説明文（Description）
 ==============================
 
-Stop wasting hours formatting Excel for IA billing.
+Stop reformatting Excel for every IA billing cycle.
 
-Adjuster Expense Logger keeps every per diem, hotel night, mileage trip, meal, parking fee, and supply purchase organized by claim number — ready to export as CSV for the IA company invoice or Schedule C tax filing.
+Adjuster Expense Logger keeps every per diem, hotel night, mileage trip, meal, parking fee, and supply purchase organized by claim number — ready to export as CSV for the IA company invoice or Schedule C tax records.
 
 Built for independent insurance adjusters who deploy on CAT (hurricane, hail, freeze, wildfire) and run multiple claims a day.
 
-✔ Track per diem, hotel, mileage (IRS rate auto-calc), meals, parking, supplies, phone, other
+✔ Track per diem, hotel, mileage (auto-calculated at the 2026 IRS standard rate of $0.725/mi, editable in Pro), meals, parking, supplies, phone, other
 ✔ Tag every expense with a claim # — instant totals by claim or category
 ✔ Filter by claim / category / date range
 ✔ CSV export ready for IA billing or accountant handoff
 ✔ JSON backup for switching devices
 ✔ Deployment header (adjuster name, CAT event, start / end dates) included in every export
+✔ Available in 9 languages (English, Spanish, Portuguese, German, French, Italian, Japanese, Korean, Simplified Chinese)
 
 Free plan:
 • Log up to 30 expenses
-• CSV / JSON import & export — your data is always yours
+• CSV / JSON import &amp; export — your data is always yours, no PDF lock-in
 
 Pro plan ($12.99 one-time, no subscription):
 • Unlimited expenses
@@ -26,9 +27,13 @@ Pro plan ($12.99 one-time, no subscription):
 • Custom IRS mileage rate override
 • Dark mode
 
-Everything stays on your device — no cloud, no account, no telemetry. Sign in once, log expenses on the fly, export when payday comes.
+Your expense data stays on your device — stored locally in Chrome via chrome.storage.local, never uploaded to our servers, no analytics, no tracking. The only outbound connection is to ExtensionPay (our payment processor) when you choose to upgrade to Pro. No account login is required — just install and start logging.
 
 If you have ever lost a receipt because Excel was hard to open in your truck cab, this is the tool.
+
+---
+Pricing: $12.99 one-time purchase via ExtensionPay (Stripe). 14-day refund — contact microforge.hq@gmail.com.
+Disclaimer: This extension is a record-keeping tool. It does not provide tax, accounting, or legal advice. Verify exported data with your CPA, IA company, and current IRS rules before submitting.
 
 ==============================
 カテゴリ

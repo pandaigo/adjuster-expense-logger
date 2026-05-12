@@ -46,9 +46,14 @@ const js = readFileSync(join(root, 'popup.js'), 'utf-8');
 const htmlIds = new Set([...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]));
 const jsRefs = new Set([...js.matchAll(/\$\(['"]#([^'"\s]+)['"]\)/g)].map(m => m[1]));
 [...js.matchAll(/getElementById\(['"]([^'"]+)['"]\)/g)].forEach(m => jsRefs.add(m[1]));
-const missing = [...jsRefs].filter(id => !htmlIds.has(id));
+// JS で動的に createElement + el.id = '...' で作る ID は HTML 側に書かれていない。
+// popup.js の `<id>.id = 'foo-bar'` / `el.id = 'foo-bar'` パターンを許可リストに加える。
+const dynamicIds = new Set([
+  ...[...js.matchAll(/\.id\s*=\s*['"]([^'"]+)['"]/g)].map(m => m[1])
+]);
+const missing = [...jsRefs].filter(id => !htmlIds.has(id) && !dynamicIds.has(id));
 if (missing.length > 0) fail(`JSが参照しているがHTMLに存在しないID: ${missing.join(', ')}`);
-else ok(`JS参照IDすべてHTMLに存在 (${jsRefs.size}件)`);
+else ok(`JS参照IDすべてHTMLに存在 or 動的生成 (${jsRefs.size}件)`);
 
 // 3. CSP 違反検出
 console.log('\n[3] CSP適合チェック');

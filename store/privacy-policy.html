@@ -44,10 +44,17 @@
   <p>The Extension requests the following permissions:</p>
   <ul>
     <li><strong>storage</strong> — To save expense entries, deployment details, and preferences locally on the device.</li>
+    <li><strong>host access to https://extensionpay.com/*</strong> (declared via <code>content_scripts</code> in the manifest) — Required by ExtensionPay (our payment processor) to detect when a one-time Pro purchase completes. The ExtPay content script runs only on the ExtensionPay checkout page. Only purchase status (paid / unpaid) is exchanged. No expense data, claim numbers, or deployment details are shared.</li>
   </ul>
 
   <h2>Third-Party Services</h2>
   <p>The Extension uses <strong>ExtensionPay</strong> (extensionpay.com) to process one-time payments and verify purchase status. When a user upgrades to the Pro version, payment is handled by ExtensionPay via Stripe. Only purchase status (paid / unpaid) is shared with the Extension. No expense entries, claim numbers, deployment data, or other adjuster information is shared with ExtensionPay, Stripe, or any other third party.</p>
+
+  <h2>Limited Use Disclosure</h2>
+  <p>Use of information received from Chrome Web Store APIs and any Google user data will adhere to the <a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use/">Chrome Web Store User Data Policy</a>, including the Limited Use requirements.</p>
+
+  <h2>Disclaimer</h2>
+  <p>The Extension is a personal record-keeping tool. It does not provide tax, accounting, or legal advice. Users should verify exported data with their CPA, IA company, and the current IRS rules before relying on it for tax filings, billing disputes, or any regulatory submission. No warranty, express or implied, is provided.</p>
 
   <h2>Changes to This Policy</h2>
   <p>If this policy is updated, the changes will be posted on this page with an updated date.</p>
