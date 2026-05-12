@@ -23,31 +23,35 @@ mkdirSync(cwsScreensDir, { recursive: true });
 // プロモタイル 440x280
 // TODO: 拡張ごとにヘッドライン・差し色・サブコピーを編集
 // ============================================================
-// 設計指針 (Option 2: 軽い間引き、3 ペルソナ過剰チェック 2026-05-13 反映):
-// 前案 (黄色ハイビズフル) は Marcus 7.5/10、Tom 6/10 で「装飾過多」判定。
-// 削除: 警告三角 ⚠ (黄黒で既に警告色なので冗長) / claim# 回転スタンプ (チープ印象の元凶) /
-//       チップを 5 → 3 に削減 (情報重複)
-// 維持: $0.725 ヒーロー数字、上下黒帯、"NO SUBSCRIPTION" コピー (3 シグナルは保持)
+// 設計指針 (v6: 「何の拡張か即わかる」明確化、2026-05-13 ユーザー指摘反映):
+// 前案 (v5) は $0.725 が最大文字で「mileage tracker と誤読される」リスクあり。
+// 製品本質は「per diem + hotel + mileage + meals を claim# でまとめる経費ログ全体」。
+// 機能訴求を最大に、IRS rate は補足扱いに降格。
 const promoSmallSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280">
   <rect width="440" height="280" fill="#FFD60A"/>
 
-  <!-- 上下の黒ストライプ (工事現場テープ風) -->
-  <rect x="0" y="0" width="440" height="32" fill="#0A0A0A"/>
-  <rect x="0" y="248" width="440" height="32" fill="#0A0A0A"/>
-  <text x="220" y="22" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900" fill="#FFD60A" letter-spacing="3">ADJUSTER EXPENSE LOG</text>
-  <text x="220" y="269" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFD60A" letter-spacing="2">BUILT FOR CAT DEPLOYMENT · NO SUBSCRIPTION</text>
+  <!-- 上黒帯: 製品名 (タイトル帯) -->
+  <rect x="0" y="0" width="440" height="36" fill="#0A0A0A"/>
+  <text x="220" y="24" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900" fill="#FFD60A" letter-spacing="3">ADJUSTER EXPENSE LOG</text>
 
-  <!-- 巨大数字 (IRS rate ヒーロー、focal point を 1 つに集約) -->
-  <text x="32" y="135" font-family="Inter, Arial, sans-serif" font-size="78" font-weight="900" fill="#0A0A0A" letter-spacing="-3">$0.725</text>
-  <text x="34" y="165" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#0A0A0A" letter-spacing="0.3">/ mile · auto-calc · IRS 2026</text>
+  <!-- 下黒帯: 差別化文言 -->
+  <rect x="0" y="244" width="440" height="36" fill="#0A0A0A"/>
+  <text x="220" y="268" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFD60A" letter-spacing="2">CAT-READY · NO SUBSCRIPTION</text>
 
-  <!-- カテゴリチップ 3 つだけ (情報密度と簡潔さのバランス) -->
-  <g font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#FFD60A">
-    <rect x="32" y="195" width="100" height="30" rx="4" fill="#0A0A0A"/><text x="82" y="215" text-anchor="middle">PER DIEM</text>
-    <rect x="140" y="195" width="100" height="30" rx="4" fill="#0A0A0A"/><text x="190" y="215" text-anchor="middle">MILEAGE</text>
-    <rect x="248" y="195" width="160" height="30" rx="4" fill="#0A0A0A"/><text x="328" y="215" text-anchor="middle">CLAIM # TAGGED</text>
-  </g>
+  <!-- ヒーロー: 機能訴求 1 行で「何の拡張か」が即分かるよう最大文字に -->
+  <text x="32" y="86" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900" fill="#0A0A0A" letter-spacing="-1.0">Per diem. Mileage.</text>
+  <text x="32" y="120" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900" fill="#0A0A0A" letter-spacing="-1.0">Hotel. Meals.</text>
+
+  <!-- 副題: 集計軸を明示 -->
+  <text x="32" y="154" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#0A0A0A" letter-spacing="0.2">All tagged by claim # · Auto-totaled</text>
+
+  <!-- 補足: 数値具体性 (IRS rate を信用ブースターとして小さく) -->
+  <text x="32" y="184" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0A0A0A" letter-spacing="0.1">Mileage auto-calc at IRS $0.725/mi · CSV / PDF export</text>
+
+  <!-- 信用シール: For independent adjusters バッジ -->
+  <rect x="32" y="200" width="376" height="30" rx="4" fill="#0A0A0A"/>
+  <text x="220" y="220" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#FFD60A" letter-spacing="1.5">FOR INDEPENDENT INSURANCE ADJUSTERS</text>
 </svg>`;
 
 writeFileSync(join(outDir, 'promo-small-440x280.svg'), promoSmallSvg);
