@@ -24,6 +24,13 @@ async function shot(page, label) {
   const num = String(shotCount).padStart(2, '0');
   const safeLabel = label.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
   try {
+    // ストア用スクショではクロスプロモ banner を一時的に隠す。
+    // CWS 3 ペルソナレビュー (Brenda/Marcus/Jessica) で「他拡張の Try it CTA が
+    // 本拡張のインストール判断を割る」と CVR -2~4pt 級の Critical 指摘あり。
+    await page.evaluate(() => {
+      const el = document.querySelector('#cross-promo');
+      if (el) el.style.display = 'none';
+    }).catch(() => {});
     await page.screenshot({ path: join(screenshotDir, `${num}-${safeLabel}.png`), fullPage: false });
   } catch (_) {}
 }
