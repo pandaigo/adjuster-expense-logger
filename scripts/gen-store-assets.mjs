@@ -23,12 +23,11 @@ mkdirSync(cwsScreensDir, { recursive: true });
 // プロモタイル 440x280
 // TODO: 拡張ごとにヘッドライン・差し色・サブコピーを編集
 // ============================================================
-// 設計指針 (ユーザー指摘 2026-05-12 反映):
-// - 価格はタイルに載せない (CWS は検索結果に価格を別途表示する。タイルは機能訴求に集中)
-// - 一番大きい文字は「機能名・機能説明」(製品名は CWS が下に併記するので冗長)
-// - "Per diem · Mileage · Hotel" を最大級フォントで主役に
-// - "For independent insurance adjusters" を副題で「誰のため」を明示
-// - "No subscription" は控えめに置く (差別化要素として最下部)
+// 設計指針 (再ペルソナレビュー 2026-05-13 案 A 反映):
+// - 主見出しを 1 行に統合 ("Per Diem · Mileage · Hotel") して 30pt、横幅 ~360px
+// - アイコンを右上 88×88 に縮退 (288×288 では Hotel の末尾と衝突していた)
+// - 副題を "For independent adjusters" に短縮 (insurance は文脈で自明)
+// - ベネフィット行を残し、CAT-ready バッジを 14→16pt に昇格 (Brenda 評価で最強キーワード)
 const PROMO_ICON_B64 = readFileSync(join(root, 'icons', 'icon128.png')).toString('base64');
 const promoSmallSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 440 280">
@@ -41,21 +40,22 @@ const promoSmallSvg = `
   </defs>
   <rect x="0" y="0" width="440" height="280" fill="url(#bg)"/>
 
-  <!-- 右側に製品アイコン -->
-  <image xlink:href="data:image/png;base64,${PROMO_ICON_B64}" x="290" y="80" width="128" height="128" opacity="0.96"/>
+  <!-- 製品アイコン: 右側 110×110、テキスト領域 (x=24-260) と完全に分離 -->
+  <image xlink:href="data:image/png;base64,${PROMO_ICON_B64}" x="304" y="86" width="110" height="110" opacity="0.96"/>
 
-  <!-- 主見出し: 機能訴求 (タイル内で最大文字、2 行に分割して密度を稼ぐ) -->
-  <text x="24" y="78" font-family="Inter, Arial, Helvetica, sans-serif" font-size="34" font-weight="900" fill="#fff" letter-spacing="-0.8">Per Diem.</text>
-  <text x="24" y="118" font-family="Inter, Arial, Helvetica, sans-serif" font-size="34" font-weight="900" fill="#fff" letter-spacing="-0.8">Mileage. Hotel.</text>
+  <!-- 主見出し: 2 行構成、テキスト幅を 260px 以内に制限してアイコンと重なり回避
+       (Inter 900 24pt で "Per Diem · Mileage" ≈ 240px、"Hotel · Meals" ≈ 170px) -->
+  <text x="24" y="72" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#fff" letter-spacing="-0.5">Per Diem · Mileage</text>
+  <text x="24" y="104" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#fff" letter-spacing="-0.5">Hotel · Meals · More</text>
 
-  <!-- ターゲット明示 (副題) -->
-  <text x="24" y="164" font-family="Inter, Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#93C5FD" letter-spacing="0.2">For independent insurance adjusters</text>
+  <!-- 副題: ターゲット明示 (insurance を省略して横幅余裕を確保) -->
+  <text x="24" y="148" font-family="Inter, Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#93C5FD" letter-spacing="0.2">For independent adjusters</text>
 
-  <!-- ベネフィット帯 (機能の中身を1行で説明) -->
-  <text x="24" y="206" font-family="Inter, Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#cbd5e1" letter-spacing="0.1">Log by claim # · Export CSV / PDF · IRS rate auto-calc</text>
+  <!-- ベネフィット帯 -->
+  <text x="24" y="186" font-family="Inter, Arial, Helvetica, sans-serif" font-size="14" font-weight="600" fill="#cbd5e1" letter-spacing="0.1">IRS rate auto-calc · CSV / PDF export</text>
 
-  <!-- 差別化要素 (差し色オレンジ、controlled emphasis) -->
-  <text x="24" y="244" font-family="Inter, Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="0.4"><tspan fill="#FF6B4A">CAT-ready</tspan><tspan fill="#cbd5e1"> · No subscription</tspan></text>
+  <!-- バッジ: CAT-ready と No subscription を最下段で強調 -->
+  <text x="24" y="228" font-family="Inter, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" letter-spacing="0.4"><tspan fill="#FF6B4A">CAT-ready</tspan><tspan fill="#cbd5e1"> · No subscription</tspan></text>
 </svg>`;
 
 writeFileSync(join(outDir, 'promo-small-440x280.svg'), promoSmallSvg);
