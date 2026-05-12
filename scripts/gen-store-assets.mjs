@@ -23,39 +23,44 @@ mkdirSync(cwsScreensDir, { recursive: true });
 // プロモタイル 440x280
 // TODO: 拡張ごとにヘッドライン・差し色・サブコピーを編集
 // ============================================================
-// 設計指針 (再ペルソナレビュー 2026-05-13 案 A 反映):
-// - 主見出しを 1 行に統合 ("Per Diem · Mileage · Hotel") して 30pt、横幅 ~360px
-// - アイコンを右上 88×88 に縮退 (288×288 では Hotel の末尾と衝突していた)
-// - 副題を "For independent adjusters" に短縮 (insurance は文脈で自明)
-// - ベネフィット行を残し、CAT-ready バッジを 14→16pt に昇格 (Brenda 評価で最強キーワード)
-const PROMO_ICON_B64 = readFileSync(join(root, 'icons', 'icon128.png')).toString('base64');
+// 設計指針 (3 ペルソナレビュー 2026-05-13 採用案 = 黄色ハイビズ警告サイン):
+// - CWS 検索結果一覧で青系競合 (Hurdlr / TripLog / Stride / MileIQ) と完全に異質な配色で視線奪取
+// - 黄黒コントラスト比 19:1 で focal point を $0.725/mile (IRS 標準レート) に集中
+// - 上下の黒帯 = 工事現場テープ / ハリケーン被害区域マーカー = IA 現場の業界記号
+// - "BUILT FOR CAT DEPLOYMENT" で「業界の人が作った」と Brenda が 0.5 秒で判断
 const promoSmallSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 440 280">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0F2540"/>
-      <stop offset="55%" style="stop-color:#1E3A5F"/>
-      <stop offset="100%" style="stop-color:#2E4A6F"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="0" width="440" height="280" fill="url(#bg)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280">
+  <rect width="440" height="280" fill="#FFD60A"/>
 
-  <!-- 製品アイコン: 右側 110×110、テキスト領域 (x=24-260) と完全に分離 -->
-  <image xlink:href="data:image/png;base64,${PROMO_ICON_B64}" x="304" y="86" width="110" height="110" opacity="0.96"/>
+  <!-- 上下の黒ストライプ (工事現場テープ風) -->
+  <rect x="0" y="0" width="440" height="26" fill="#0A0A0A"/>
+  <rect x="0" y="254" width="440" height="26" fill="#0A0A0A"/>
+  <text x="22" y="18" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="900" fill="#FFD60A" letter-spacing="2.5">ADJUSTER EXPENSE LOG</text>
+  <text x="22" y="272" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#FFD60A" letter-spacing="1.2">BUILT FOR CAT DEPLOYMENT · NO SUBSCRIPTION</text>
 
-  <!-- 主見出し: 2 行構成、テキスト幅を 260px 以内に制限してアイコンと重なり回避
-       (Inter 900 24pt で "Per Diem · Mileage" ≈ 240px、"Hotel · Meals" ≈ 170px) -->
-  <text x="24" y="72" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#fff" letter-spacing="-0.5">Per Diem · Mileage</text>
-  <text x="24" y="104" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#fff" letter-spacing="-0.5">Hotel · Meals · More</text>
+  <!-- 巨大数字 (IRS rate ヒーロー、focal point) -->
+  <text x="22" y="120" font-family="Inter, Arial, sans-serif" font-size="78" font-weight="900" fill="#0A0A0A" letter-spacing="-3">$0.725</text>
+  <text x="22" y="148" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#0A0A0A" letter-spacing="0.5">/ mile · auto-calc</text>
 
-  <!-- 副題: ターゲット明示 (insurance を省略して横幅余裕を確保) -->
-  <text x="24" y="148" font-family="Inter, Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#93C5FD" letter-spacing="0.2">For independent adjusters</text>
+  <!-- 警告三角 (CAT 業界メタファー) -->
+  <polygon points="370,68 410,68 390,34" fill="#0A0A0A"/>
+  <text x="390" y="62" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900" fill="#FFD60A" text-anchor="middle">!</text>
 
-  <!-- ベネフィット帯 -->
-  <text x="24" y="186" font-family="Inter, Arial, Helvetica, sans-serif" font-size="14" font-weight="600" fill="#cbd5e1" letter-spacing="0.1">IRS rate auto-calc · CSV / PDF export</text>
+  <!-- カテゴリチップ (黒バー + 黄文字) -->
+  <g font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#FFD60A">
+    <rect x="22" y="180" width="86" height="26" fill="#0A0A0A" rx="3"/><text x="65" y="198" text-anchor="middle">PER DIEM</text>
+    <rect x="116" y="180" width="62" height="26" fill="#0A0A0A" rx="3"/><text x="147" y="198" text-anchor="middle">HOTEL</text>
+    <rect x="186" y="180" width="80" height="26" fill="#0A0A0A" rx="3"/><text x="226" y="198" text-anchor="middle">MILEAGE</text>
+    <rect x="22" y="214" width="76" height="26" fill="#0A0A0A" rx="3"/><text x="60" y="232" text-anchor="middle">MEALS</text>
+    <rect x="106" y="214" width="160" height="26" fill="#0A0A0A" rx="3"/><text x="186" y="232" text-anchor="middle">CLAIM # TAGGED</text>
+  </g>
 
-  <!-- バッジ: CAT-ready と No subscription を最下段で強調 -->
-  <text x="24" y="228" font-family="Inter, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" letter-spacing="0.4"><tspan fill="#FF6B4A">CAT-ready</tspan><tspan fill="#cbd5e1"> · No subscription</tspan></text>
+  <!-- 右側: claim# スタンプ風 (CAT 派遣感を強化) -->
+  <g transform="translate(310,166) rotate(-8)">
+    <rect x="0" y="0" width="120" height="68" fill="none" stroke="#0A0A0A" stroke-width="3" rx="4"/>
+    <text x="60" y="26" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="800" fill="#0A0A0A" text-anchor="middle" letter-spacing="1.5">CLAIM #</text>
+    <text x="60" y="52" font-family="Courier New, monospace" font-size="20" font-weight="900" fill="#0A0A0A" text-anchor="middle">CAT-2026</text>
+  </g>
 </svg>`;
 
 writeFileSync(join(outDir, 'promo-small-440x280.svg'), promoSmallSvg);
@@ -74,21 +79,48 @@ console.log('Generated store/promo-small-440x280.png + .svg');
 // - キャプションの句読点は全体ありか全体なしで統一 (混在は素人感)
 //
 // mode:
-//   'fullscreen' = 撮影元 PNG を 800x680 にフィットさせて 1280x800 中央配置
-// ユーザー指摘: 1/2/5 で popup の見た目サイズが不揃いだったため、全 5 枚を fullscreen 統一。
-// CSV/PDF プレビューも 800x680 で撮影しているので同じパスを通す。
-// ストーリー (5 枚): Why/What → Filter → CSV 出力 → PDF 出力 (Pro) → Buy
+//   'fullscreen'    = 撮影元 PNG を 800x680 にフィットさせて 1280x800 中央配置 (中身が画面全体に広がる CSV/PDF preview 用)
+//   'popup-callout' = 左に popup を縦長で配置 + 右半分にベネフィット 3 行のコールアウト (右余白を埋める)
+// ユーザー指摘: 1/2/5 が popup を中央配置すると右半分が単色背景の余白になり「見栄え悪い」。
+// popup を左、右半分に機能ベネフィットを置くマーケ定番レイアウトに変更。
 const targets = [
   // 1 枚目: 15件入った使い込み popup (claim 別タグ + 即合計)
-  { src: '04-rich-overview.png',          caption: 'Every expense tagged to a claim — instant totals.',          mode: 'fullscreen' },
+  {
+    src: '04-rich-overview.png',
+    caption: 'Every expense tagged to a claim — instant totals.',
+    mode: 'popup-callout',
+    callout: [
+      { title: 'Tagged by claim #', body: 'Per diem, hotel, mileage, meals — all linked to the IA company\'s case ID' },
+      { title: 'Instant subtotals', body: 'Total per claim or per category in one tap' },
+      { title: '8 categories built-in', body: 'Per diem · Hotel · Mileage · Meals · Parking · Supplies · Phone · Other' }
+    ]
+  },
   // 2 枚目: Filter モーダルを「開いた状態」
-  { src: '06-rich-filter-modal-open.png', caption: 'Filter by claim or category — subtotals on the fly.',        mode: 'fullscreen' },
+  {
+    src: '06-rich-filter-modal-open.png',
+    caption: 'Filter by claim or category — subtotals on the fly.',
+    mode: 'popup-callout',
+    callout: [
+      { title: 'Find any claim fast', body: 'Hyphen / space / case-insensitive — type "PA0988" to find "PA-09887766"' },
+      { title: 'Category × claim × date', body: 'Combine filters to bill one carrier for one week of work' },
+      { title: 'Totals follow the filter', body: 'The dollar figure at the top reflects exactly what you see' }
+    ]
+  },
   // 3 枚目: 実 CSV を Chrome 組み込み plain-text viewer で表示 (実出力、UI 装飾ゼロ)
   { src: 'rich-csv-preview.png',          caption: 'Export CSV — opens in Excel, Google Sheets, or any reader.', mode: 'fullscreen' },
   // 4 枚目: 実 PDF (Pro) を Chromium PDF viewer で表示 (実出力)
   { src: 'rich-pdf-preview.png',          caption: 'Pro PDF report — subtotals by category and claim #.',        mode: 'fullscreen' },
-  // 5 枚目: 課金モーダル (撮影連番はシナリオ追加で変動するため、ワイルドカード相当の suffix で探す)
-  { src: 'free-cap-upgrade.png',          caption: '$12.99 once. One purchase covers every CAT deployment.',     mode: 'fullscreen' }
+  // 5 枚目: 課金モーダル
+  {
+    src: 'free-cap-upgrade.png',
+    caption: '$12.99 once. One purchase covers every CAT deployment.',
+    mode: 'popup-callout',
+    callout: [
+      { title: 'No subscription', body: 'One $12.99 charge via ExtensionPay. No renewal, no auto-billing.' },
+      { title: 'Yours on every device', body: 'Sign-in-free. JSON backup moves your data to a new laptop in seconds.' },
+      { title: 'Five Pro features', body: 'Unlimited entries · PDF report · Claim # summary · Custom IRS rate · Dark mode' }
+    ]
+  }
 ];
 
 const screenshotsDir = join(root, 'screenshots');
@@ -114,6 +146,76 @@ if (!existsSync(screenshotsDir)) {
       continue;
     }
     const srcPath = join(screenshotsDir, resolved);
+
+    // 'popup-callout': 左に popup を縦長で配置 + 右半分にベネフィットコールアウト
+    if (t.mode === 'popup-callout') {
+      // 元画像 800x680 のうち popup 本体は左上 ~480x680。右側の空白を切り捨てる。
+      const meta = await sharp(srcPath).metadata();
+      const cw = Math.min(480, meta.width || 480);
+      const ch = Math.min(680, meta.height || 680);
+      const popupBuf = await sharp(srcPath)
+        .extract({ left: 0, top: 0, width: cw, height: ch })
+        .resize({ width: 460 })
+        .png()
+        .toBuffer();
+      const popupMeta = await sharp(popupBuf).metadata();
+      const popupX = 80;
+      const popupY = 110 + Math.max(0, (660 - (popupMeta.height || 0)) / 2);
+      const captionEsc = t.caption.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const callouts = t.callout || [];
+      // 右半分 (x=620..1240) に コールアウト 3 つを縦に並べる
+      const calloutSvg = callouts.map((c, idx) => {
+        const cy = 200 + idx * 180;
+        const titleEsc = c.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const bodyEsc = c.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        // body を 50 文字程度で折り返し (簡易、句読点で改行)
+        const words = bodyEsc.split(' ');
+        const lines = [];
+        let line = '';
+        for (const w of words) {
+          if ((line + ' ' + w).trim().length > 48) { lines.push(line.trim()); line = w; }
+          else { line += ' ' + w; }
+        }
+        if (line.trim()) lines.push(line.trim());
+        return `
+  <circle cx="640" cy="${cy - 6}" r="6" fill="#FCD34D"/>
+  <text x="660" y="${cy}" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">${titleEsc}</text>
+  ${lines.map((l, li) => `<text x="660" y="${cy + 32 + li * 28}" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">${l}</text>`).join('\n  ')}`;
+      }).join('\n');
+      const compositeSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a"/>
+      <stop offset="100%" style="stop-color:#5b4fcf"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1280" height="800" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
+  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#fff">${captionEsc}</text>
+  ${calloutSvg}
+</svg>`;
+      const bgBuffer = await sharp(Buffer.from(compositeSvg)).png().toBuffer();
+      const outBaseName = `screenshot-${i + 1}-1280x800`;
+      const popupOutPath = join(cwsScreensDir, `${outBaseName}-popup.png`);
+      await sharp(popupBuf).toFile(popupOutPath);
+      await sharp(bgBuffer)
+        .composite([{ input: popupBuf, top: Math.round(popupY), left: popupX }])
+        .png()
+        .toFile(join(cwsScreensDir, `${outBaseName}.png`));
+      // SVG 版 (再編集用)
+      const svgVersion = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 800">
+  <defs><linearGradient id="bg-${i + 1}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e3a8a"/><stop offset="100%" style="stop-color:#5b4fcf"/></linearGradient></defs>
+  <rect x="0" y="0" width="1280" height="800" fill="url(#bg-${i + 1})"/>
+  <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
+  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#fff">${captionEsc}</text>
+  <image xlink:href="${outBaseName}-popup.png" x="${popupX}" y="${Math.round(popupY)}" width="${popupMeta.width}" height="${popupMeta.height}"/>
+  ${calloutSvg}
+</svg>`;
+      writeFileSync(join(cwsScreensDir, `${outBaseName}.svg`), svgVersion);
+      console.log(`Generated screenshots/${outBaseName}.png + .svg (popup-callout)`);
+      continue;
+    }
 
     let popupBuffer;
     if (t.mode === 'fullscreen') {

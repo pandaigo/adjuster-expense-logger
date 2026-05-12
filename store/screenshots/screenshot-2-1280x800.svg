@@ -1,12 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 800">
-  <defs>
-    <linearGradient id="bg-2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e3a8a"/>
-      <stop offset="100%" style="stop-color:#5b4fcf"/>
-    </linearGradient>
-  </defs>
+  <defs><linearGradient id="bg-2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e3a8a"/><stop offset="100%" style="stop-color:#5b4fcf"/></linearGradient></defs>
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg-2)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
-  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#fff">Filter by claim or category — subtotals on the fly.</text>
-  <image xlink:href="screenshot-2-1280x800-popup.png" x="252" y="110" width="777" height="680"/>
+  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#fff">Filter by claim or category — subtotals on the fly.</text>
+  <image xlink:href="screenshot-2-1280x800-popup.png" x="80" y="114" width="460" height="652"/>
+  
+  <circle cx="640" cy="194" r="6" fill="#FCD34D"/>
+  <text x="660" y="200" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Find any claim fast</text>
+  <text x="660" y="232" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Hyphen / space / case-insensitive — type</text>
+  <text x="660" y="260" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">"PA0988" to find "PA-09887766"</text>
+
+  <circle cx="640" cy="374" r="6" fill="#FCD34D"/>
+  <text x="660" y="380" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Category × claim × date</text>
+  <text x="660" y="412" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Combine filters to bill one carrier for one week</text>
+  <text x="660" y="440" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">of work</text>
+
+  <circle cx="640" cy="554" r="6" fill="#FCD34D"/>
+  <text x="660" y="560" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Totals follow the filter</text>
+  <text x="660" y="592" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">The dollar figure at the top reflects exactly</text>
+  <text x="660" y="620" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">what you see</text>
 </svg>

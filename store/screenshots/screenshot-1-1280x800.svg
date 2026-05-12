@@ -1,12 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 800">
-  <defs>
-    <linearGradient id="bg-1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e3a8a"/>
-      <stop offset="100%" style="stop-color:#5b4fcf"/>
-    </linearGradient>
-  </defs>
+  <defs><linearGradient id="bg-1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e3a8a"/><stop offset="100%" style="stop-color:#5b4fcf"/></linearGradient></defs>
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg-1)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
-  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#fff">Every expense tagged to a claim — instant totals.</text>
-  <image xlink:href="screenshot-1-1280x800-popup.png" x="252" y="110" width="777" height="680"/>
+  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#fff">Every expense tagged to a claim — instant totals.</text>
+  <image xlink:href="screenshot-1-1280x800-popup.png" x="80" y="114" width="460" height="652"/>
+  
+  <circle cx="640" cy="194" r="6" fill="#FCD34D"/>
+  <text x="660" y="200" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Tagged by claim #</text>
+  <text x="660" y="232" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Per diem, hotel, mileage, meals — all linked to</text>
+  <text x="660" y="260" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">the IA company's case ID</text>
+
+  <circle cx="640" cy="374" r="6" fill="#FCD34D"/>
+  <text x="660" y="380" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">Instant subtotals</text>
+  <text x="660" y="412" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Total per claim or per category in one tap</text>
+
+  <circle cx="640" cy="554" r="6" fill="#FCD34D"/>
+  <text x="660" y="560" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">8 categories built-in</text>
+  <text x="660" y="592" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Per diem · Hotel · Mileage · Meals · Parking ·</text>
+  <text x="660" y="620" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="#cbd5e1" letter-spacing="0.1">Supplies · Phone · Other</text>
 </svg>

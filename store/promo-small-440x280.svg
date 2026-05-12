@@ -1,28 +1,34 @@
 
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 440 280">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0F2540"/>
-      <stop offset="55%" style="stop-color:#1E3A5F"/>
-      <stop offset="100%" style="stop-color:#2E4A6F"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="0" width="440" height="280" fill="url(#bg)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280">
+  <rect width="440" height="280" fill="#FFD60A"/>
 
-  <!-- 製品アイコン: 右側 110×110、テキスト領域 (x=24-260) と完全に分離 -->
-  <image xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAANh0lEQVR4nO2deXQURR7H54/F/cMnCZlMT46Z4EEmISZzGGMmyBpnwqGSOUO4MiNRNOgCKsiC4Lq63ogag7s+wfXpqnuI53MVH67HCiIgBHBBFIK4yylgoiFBSeil9lXngITpme6u36Sqseq97z9Jz3vJ7/Pp6u6qmi6DgTfeeOONN9544w2oDS2ZmmFxR6dY3DUNFndkpbW0pslSGmnJdtd0WtwRdCo1yFIqlylnJPuy0zM5QSah7JK+yeqTiX1z6emZEDOZvalGmcXxMr5vLulKRm+q5OMKdZpd4ZYMZ6jJ7AqtzHCFGwRn1WRTSXWGgeWWVRI15pRFbrG4Ixus7iiyuiN90hc8h58RM2GU4YodsyuMBFfwM7MrNCurJGg0sNKyL6uxWNzRJ6xlkWNd4Dn8zCTAN7tCvRFcoXazM1if5qjOpga+uLhukLWs5larO9pmLesBz+FnJhm+FGdXBEfomNkRumfYsKt+OaDws0bU5Fnd0S0SeA4f0YB/KkGczen2oG1A4GePiFT1nvUcPmIAfk+OCg5/KKnwraWRWqs7ekIP8CPTqtG+1X4kbvURZe8qP5pSW8U6/K44AqLgCt6UHPjua6f3gmccPs7eVQFi+GJ39nzsZx/+aTHZA7OS0e2LeoGPAwVf7I5e4AuOABLsflFwBIIg8C3uyDBLWbRVT/DxdT55AoxnG35v/G3Gwsp8IvgFBdXn6OVuf2jZJPTkI2F0AOC6L8pk/yo/WrIoiHJKWYffm02G4rpBmgWwlkXv0AN8nCWPhJMGXuwXLIEO4Esx2SvnaoJvcV+bbS2LtusBPk4yz3yxXw584tcFfMHhR4LD15ZeHMrUIAAe3v35XvPFBNEH/K6YHL7HVE/s6G1sn44AVczDlwQo8rdn5auYQMKzenqCT0eAKl3AF+xdMRX5Z6jo/vU3pcuOAGHm4HcJ4Fuv7Owvrsm0uqMn9QQfj+mzIUCYSfhd8Z0UCn1mBWd/dIre4LMhQJhl+Mhk96F0e+VEBQLUNOgNPn0BwszD70plvZLr/0q9wcfTt/QECOsEvpQVSgT4Wm/wcfAw7UDB37fKr0f4+BLQlFAAa2mkORnwLxh5LVq4+Hm0fssO1NJ6DB3vFHk6T6WltR2t2/Qlmv/gMmS9rBocviRAke9IQgGy3ZEOaPiXXDMDbd6+m3qR9ZLGbbuQfdT1oPC7BTiu5BIAfuZz+KImCSwl48Hgm4pwKpEKAWCu+bjbp11MvWbeA0tB4asQAO6Gb/2WndQLqdesbdwOCl+hALB3+82t7dQLqdc0/9AOCl+ZAMCPerSLGC/rP29CL735Efrzax+gV1asQQcOtVD/m/oHEj6BANqf82kXUC7vrd6CckZM7RN3aA768fgJNgUAgK9RALJBHtoFlMviZa+dIQDO/m/Z6gUg4WsQgHyEj3YB5fLI0tgC7Dn4HVsCAMI3FY1TIwDM8C7tAspl0dJXYwrwn/2HGRaADL4KAeDG9mkXUC43zG+IKcBrKz9lVABy+OnKBICd2KFdwP75es+3aOHiF2LCzxkxFdk8N6J7Gv6KNn3BxuglJHxNApDO6tEuYE92fLMfTZv3BDp/ZK0s/Jx+GRO9E73zr42UBYCDn16oUgCIKV3a4HFeeXcNyr3yBsXgc/oFi3Pg8PdU/nZI+KoEgJrPpw1/+YpP0NDLlZ/1OTIpC9+Ovmjaw4YAGuErFgByMQdN+Nt37SU683P6pTQ4h74ABPAVCQC9koemAJHZi8HgD728Vnp0pCoAIfz0wmvUCACzjIsW/C9371Pc9Q8rn4byvXWyv590yyJqTwWQ8FUIALeGj5YADc+9lfCMvv8PL6Nv9h3q/QyeDMITQ6WB2b3H4V6k/acOav8HJHyFAsAu4KRVuGkyAz09mXP/n2J+bvfeQ9KkUM9jIJ6SpfU/SAIAwgcQQP3qXVqFG3fd3XEFWP7O6pifO9LSJslRdfMDTAwLQ8InFEDb0m1ahSufMD+uACtXbaYOl0wA9fAJBNC+bp9W4a6uvSvuCN+uPQd1LIA2+BoFIPvSBq3C3XjHElkB9LRO0QQIP/1i1QKQf2OHVuGee/V9WQEu9d2KVm/YrkMByOCnX3y1GgFgXr9Ko2h4WddvH3sx4WPgzXf+URot1IcA5PBVCAADn5YAL7+9WvEI3wUjr0Mz735aGjhiVwAY+EZlAsDBpyXAoeZW9KvqeaqGes8fWYumL3xSmjZmSwA4+MoEAH7rNq3C4Zm7Ev9tqsf8Lyqfhu6u/wszX2CFhK9aAIhXrtMsHh7Vq7w+/oBQjkwur5qL/r3jv9QFgISvSgCo9+3TLmD7jx1o8bLXpaVeaiUoGH0TWv853UdGSPiKBYDcbIG2AKf3Brfdu0y66VMjgXPcLOmz1AQAhK9IAOidNmiD7x/82Fe34ElVq4Sicx5lRAAy+MaLr1IjAMw2K7SBywWPBgbq7lUswbrNOygLQA5fhQBwe+zQBh0vP3WcQC++8aGi+4Pf1b9EUQAY+AoFgN1giTZkJVm9YXvCtYMTZj5ESQA4+MYCtQIA7K5FG67S3Lvkb3EFGFWzkC0BNMBXJwDQ1mq0wSrNG++tiysAnkJmRgCN8JULALivHi2gG7d9jd785zrUduy4ouOfeumduALghaFMCEAAX5kAwJsq0igaBt/zvD9y/G/QPz74TLrhkzv+2PFOFJx+X1wB8PcJqQtACN9YMFaNADA7ag50wfBXuBxXzzwDYPnE+WjJ82+hxm270Q9tP0rHfvtdK1q7aQeaOvfxhE8BKz5upCsAAHwVAsBtpzrQBZtx11OKnusvvOJ6xWMA3skLeqWhIgAQfIUCwO6lO5DFen/N56rH+3MUBL9PiAZ8SQBA+GlaBSDZSHkgi/Xw07Hf+kGSyGx6w8BdAsDB1yQA6S7aA1ksPGlTMWUBGHzP5AXocMtR6gJAwVctAMQW6gNdMPzY9+gzr6Pho6YTwZ8462EmXhgFCV+VABDwaQjQE3yH//izb0p3/2oXgjy7/D1m3hcICT9tuEIBoODjTRVoFxBn68490qQPHs2LN9T79kcbmAEvL4B2+GnDxyQWABI+KwKcntn3PRNTgMZtbLwUKr4AZPBVCAADn0UBHnrqlZgCHGDwPcF9BSCHr1AAOPhcABFIABj4ygQAhM+iAHJjBQePfM+oAHDwCQVQD59FAfCYfn/4I8Jz404WMSEAAHwCAbTBZ1EAHDwB9MLrH0qvg8EvimC1++8VAAi+RgG0w8f76tEuoN5jBISvQQAy+HgDRdoF1HuMgPDTho9WIwA5fC6ACCgAOXwVAsDA5wKIQALAwFcoABx8LoAIIAAc/CH5agUghM8FEMEEgICvTgAA+FwAEUQAKPjKBQCCj7dQp11AvScNEL4yAQDhm10h6gXUe9IA4SsWAAp+PAHw0CsehcNLteWCf98zRHu2Hr/8tGPiCgAAf0j+qMQCQMKPJ4DSN3nh487241/uPkZWACD4KgSAgc8FmEouACB8hQLAwTc7E18C8Dv75RKrCz3bjl+e6BIACJ9QAPXw4wnAIyoKJHwCAbTB5wKISRRAPXyNAmiHzwUQkySANvhD8lQLQAbf7AxSL6DekwYIf0hehRoByOFzAURgAcjgqxAABj4XQAQUgBy+IgHMl4Q6oOBzAUQgAWDgD8nzHk8sgCvUDAWfCyACCAAFvwKl5lUcSXwJcIZ3QcFPJMDOwyLaelA++PesH7/z8MAIAAAfpdoqmpT0ACuh4McToOnI/9Dft4gJg49j/fim7p8lSwAQ+HkVKCWvYkXiHsAVboCCzwUQiQMFvzv1CQUQnFWToeALjkDCS8DGvfKJ1eWydvzOJF8CAOGjwTbPhMQCFPrMZlf4JAT8RALwiCoF0A4/Nc978txCrzmhAJIEruBnEPC5ACKgAETwUYrNu9agtJldoVkQ8HFo776t5xxpOQoCX4rtyl8rFiCrJGgUXKF2Uvg46zZ/Rb2Qes2nG7eBwE/J9bSfl19hVCyA1As4g/Wk8HHmP7iUeiH1mtt/vwTgzMfxPGpQ29Ic1dmCs6cX0AYfx1JShRq37aJeTL1l49adyFx0FTH8lFzvUVNBeYZqAaRewBGaTwJfcPil2EddxyXoVAd/+BWTAM58SYDbDZpbcd0gszO4iQR+T7KLw2jeA0+jtY3b+Y1h55lp/qENrdmwVer2Ic787q6/0VBcPEi7AAaDweTyDTM7gq0k8AV7//iQSS5Fvn5bpvcP7F66RuD38EGv4SM489vOy/PkGSCa4PCHzI6AyOGP1QX8VJtHTM3z+EHgn5IgWMfhj9UBfO/JFJv3BkMymskRqBXsgRMc/lhG4XvEwbne6YZkNsERCAqOwFEOfyxT8FNsnlbwbl+upTvH5QqOwCYOfwwT8PHd/uCLyocZBrSVl/9CKPLfKjh8Rzn8MVTgp9g8x1JyPfcYCqrPMdBq6cWhTJPd97ipyN/O4Y8ZEPh4bD811/OY5hG+ZLSs/KDRVOibaSryrRPsvpMc/mho+Pjufm2qzTtjcMGYNAPLzWwPCen2yokme2V9elHluyZ75Vcmu6/ZVFTZweGPig/f5u1ItXmbU20VX6Xked/Fy7gG2yomnnvhaIE2V95444033njj7exp/wfAm2viYWwAQQAAAABJRU5ErkJggg==" x="304" y="86" width="110" height="110" opacity="0.96"/>
+  <!-- 上下の黒ストライプ (工事現場テープ風) -->
+  <rect x="0" y="0" width="440" height="26" fill="#0A0A0A"/>
+  <rect x="0" y="254" width="440" height="26" fill="#0A0A0A"/>
+  <text x="22" y="18" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="900" fill="#FFD60A" letter-spacing="2.5">ADJUSTER EXPENSE LOG</text>
+  <text x="22" y="272" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#FFD60A" letter-spacing="1.2">BUILT FOR CAT DEPLOYMENT · NO SUBSCRIPTION</text>
 
-  <!-- 主見出し: 2 行構成、テキスト幅を 260px 以内に制限してアイコンと重なり回避
-       (Inter 900 24pt で "Per Diem · Mileage" ≈ 240px、"Hotel · Meals" ≈ 170px) -->
-  <text x="24" y="72" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#fff" letter-spacing="-0.5">Per Diem · Mileage</text>
-  <text x="24" y="104" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#fff" letter-spacing="-0.5">Hotel · Meals · More</text>
+  <!-- 巨大数字 (IRS rate ヒーロー、focal point) -->
+  <text x="22" y="120" font-family="Inter, Arial, sans-serif" font-size="78" font-weight="900" fill="#0A0A0A" letter-spacing="-3">$0.725</text>
+  <text x="22" y="148" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#0A0A0A" letter-spacing="0.5">/ mile · auto-calc</text>
 
-  <!-- 副題: ターゲット明示 (insurance を省略して横幅余裕を確保) -->
-  <text x="24" y="148" font-family="Inter, Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#93C5FD" letter-spacing="0.2">For independent adjusters</text>
+  <!-- 警告三角 (CAT 業界メタファー) -->
+  <polygon points="370,68 410,68 390,34" fill="#0A0A0A"/>
+  <text x="390" y="62" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900" fill="#FFD60A" text-anchor="middle">!</text>
 
-  <!-- ベネフィット帯 -->
-  <text x="24" y="186" font-family="Inter, Arial, Helvetica, sans-serif" font-size="14" font-weight="600" fill="#cbd5e1" letter-spacing="0.1">IRS rate auto-calc · CSV / PDF export</text>
+  <!-- カテゴリチップ (黒バー + 黄文字) -->
+  <g font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#FFD60A">
+    <rect x="22" y="180" width="86" height="26" fill="#0A0A0A" rx="3"/><text x="65" y="198" text-anchor="middle">PER DIEM</text>
+    <rect x="116" y="180" width="62" height="26" fill="#0A0A0A" rx="3"/><text x="147" y="198" text-anchor="middle">HOTEL</text>
+    <rect x="186" y="180" width="80" height="26" fill="#0A0A0A" rx="3"/><text x="226" y="198" text-anchor="middle">MILEAGE</text>
+    <rect x="22" y="214" width="76" height="26" fill="#0A0A0A" rx="3"/><text x="60" y="232" text-anchor="middle">MEALS</text>
+    <rect x="106" y="214" width="160" height="26" fill="#0A0A0A" rx="3"/><text x="186" y="232" text-anchor="middle">CLAIM # TAGGED</text>
+  </g>
 
-  <!-- バッジ: CAT-ready と No subscription を最下段で強調 -->
-  <text x="24" y="228" font-family="Inter, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" letter-spacing="0.4"><tspan fill="#FF6B4A">CAT-ready</tspan><tspan fill="#cbd5e1"> · No subscription</tspan></text>
+  <!-- 右側: claim# スタンプ風 (CAT 派遣感を強化) -->
+  <g transform="translate(310,166) rotate(-8)">
+    <rect x="0" y="0" width="120" height="68" fill="none" stroke="#0A0A0A" stroke-width="3" rx="4"/>
+    <text x="60" y="26" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="800" fill="#0A0A0A" text-anchor="middle" letter-spacing="1.5">CLAIM #</text>
+    <text x="60" y="52" font-family="Courier New, monospace" font-size="20" font-weight="900" fill="#0A0A0A" text-anchor="middle">CAT-2026</text>
+  </g>
 </svg>
