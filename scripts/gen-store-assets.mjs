@@ -8,7 +8,7 @@
 //   1. プロモタイル SVG のコピー文言（Personal CRM / No Subscription 等）
 //   2. targets 配列（e2e で撮ったスクショのうち5枚を選んでキャプション）
 import sharp from 'sharp';
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'fs';
+import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -23,12 +23,12 @@ mkdirSync(cwsScreensDir, { recursive: true });
 // プロモタイル 440x280
 // TODO: 拡張ごとにヘッドライン・差し色・サブコピーを編集
 // ============================================================
-// 設計指針 (3 ペルソナレビュー 2026-05-12 反映):
-// - 左寄せ + 右 30% に製品アイコン配置 (右側余白を埋める)
-// - 価格 $12.99 をタイルに出す (買切訴求はサブスク疲れ層に一撃)
-// - "forever" 表現は CWS Deceptive Behavior リスク → "$12.99 one-time" に置換
-// - フォント階層: 主見出し 48 → ターゲット 28 → 機能 18 → 補足 14 で差別化
-// - letter-spacing は -0.8 (-1.2 は強すぎて N/o がくっつく)
+// 設計指針 (ユーザー指摘 2026-05-12 反映):
+// - 価格はタイルに載せない (CWS は検索結果に価格を別途表示する。タイルは機能訴求に集中)
+// - 一番大きい文字は「機能名・機能説明」(製品名は CWS が下に併記するので冗長)
+// - "Per diem · Mileage · Hotel" を最大級フォントで主役に
+// - "For independent insurance adjusters" を副題で「誰のため」を明示
+// - "No subscription" は控えめに置く (差別化要素として最下部)
 const PROMO_ICON_B64 = readFileSync(join(root, 'icons', 'icon128.png')).toString('base64');
 const promoSmallSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 440 280">
@@ -41,21 +41,21 @@ const promoSmallSvg = `
   </defs>
   <rect x="0" y="0" width="440" height="280" fill="url(#bg)"/>
 
-  <!-- 右側に製品アイコンを配置して文字だけタイルから脱却 -->
-  <image xlink:href="data:image/png;base64,${PROMO_ICON_B64}" x="295" y="76" width="128" height="128" opacity="0.96"/>
+  <!-- 右側に製品アイコン -->
+  <image xlink:href="data:image/png;base64,${PROMO_ICON_B64}" x="290" y="80" width="128" height="128" opacity="0.96"/>
 
-  <!-- 主見出し: No Subscription -->
-  <text x="24" y="84" font-family="Inter, Arial, Helvetica, sans-serif" font-size="44" font-weight="900" letter-spacing="-0.8" xml:space="preserve"><tspan fill="#FF6B4A">No </tspan><tspan fill="#fff">Subscription.</tspan></text>
+  <!-- 主見出し: 機能訴求 (タイル内で最大文字、2 行に分割して密度を稼ぐ) -->
+  <text x="24" y="78" font-family="Inter, Arial, Helvetica, sans-serif" font-size="34" font-weight="900" fill="#fff" letter-spacing="-0.8">Per Diem.</text>
+  <text x="24" y="118" font-family="Inter, Arial, Helvetica, sans-serif" font-size="34" font-weight="900" fill="#fff" letter-spacing="-0.8">Mileage. Hotel.</text>
 
-  <!-- ターゲット明示 -->
-  <text x="24" y="124" font-family="Inter, Arial, Helvetica, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="0.2">For insurance adjusters.</text>
+  <!-- ターゲット明示 (副題) -->
+  <text x="24" y="164" font-family="Inter, Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#93C5FD" letter-spacing="0.2">For independent insurance adjusters</text>
 
-  <!-- 機能列挙 -->
-  <text x="24" y="170" font-family="Inter, Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#93C5FD" letter-spacing="0.3">Per diem · Mileage · Hotels</text>
+  <!-- ベネフィット帯 (機能の中身を1行で説明) -->
+  <text x="24" y="206" font-family="Inter, Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#cbd5e1" letter-spacing="0.1">Log by claim # · Export CSV / PDF · IRS rate auto-calc</text>
 
-  <!-- 価格 + 一回購入訴求 (forever 表現 → one-time 置換で CWS 安全) -->
-  <text x="24" y="212" font-family="Inter, Arial, Helvetica, sans-serif" font-size="20" font-weight="800" fill="#fff" letter-spacing="-0.2"><tspan fill="#FCD34D">$12.99</tspan> one-time</text>
-  <text x="24" y="240" font-family="Inter, Arial, Helvetica, sans-serif" font-size="14" font-weight="600" fill="#cbd5e1" letter-spacing="0.2">CAT-ready · No recurring fees</text>
+  <!-- 差別化要素 (差し色オレンジ、controlled emphasis) -->
+  <text x="24" y="244" font-family="Inter, Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="0.4"><tspan fill="#FF6B4A">CAT-ready</tspan><tspan fill="#cbd5e1"> · No subscription</tspan></text>
 </svg>`;
 
 writeFileSync(join(outDir, 'promo-small-440x280.svg'), promoSmallSvg);
@@ -74,23 +74,21 @@ console.log('Generated store/promo-small-440x280.png + .svg');
 // - キャプションの句読点は全体ありか全体なしで統一 (混在は素人感)
 //
 // mode:
-//   'popup'      = 左上 380x500 を抽出して 1.3倍拡大 (popup単体表示時)
-//   'fullscreen' = 800x700 全体を縮小 (popup を覆うモーダル等を撮影した時)
-//   'asis'       = 1280x800 として既に撮影されている画像をそのまま採用 (CSV/PDF プレビュー等)
+//   'fullscreen' = 撮影元 PNG を 800x680 にフィットさせて 1280x800 中央配置
+// ユーザー指摘: 1/2/5 で popup の見た目サイズが不揃いだったため、全 5 枚を fullscreen 統一。
+// CSV/PDF プレビューも 800x680 で撮影しているので同じパスを通す。
 // ストーリー (5 枚): Why/What → Filter → CSV 出力 → PDF 出力 (Pro) → Buy
-// ペルソナレビュー指摘: 出力物 (CSV/PDF) が 0 枚で description の訴求を裏付けられていなかった。
-// 3, 4 を出力物に振り替え、Deployment と Mileage 自動計算は description bullet に降格。
 const targets = [
   // 1 枚目: 15件入った使い込み popup (claim 別タグ + 即合計)
-  { src: '04-rich-overview.png',          caption: 'Every expense tagged to a claim — instant totals.',   mode: 'popup' },
-  // 2 枚目: Filter モーダルを「開いた状態」(active filter chip 風) — 1 枚目と差別化
-  { src: '06-rich-filter-modal-open.png', caption: 'Filter by claim or category — subtotals on the fly.', mode: 'fullscreen' },
-  // 3 枚目: 実 CSV を Excel/Sheets 風テーブルとして 1280x800 で表示 (実出力)
-  { src: 'rich-csv-preview.png',          caption: '',                                                    mode: 'asis' },
+  { src: '04-rich-overview.png',          caption: 'Every expense tagged to a claim — instant totals.',          mode: 'fullscreen' },
+  // 2 枚目: Filter モーダルを「開いた状態」
+  { src: '06-rich-filter-modal-open.png', caption: 'Filter by claim or category — subtotals on the fly.',        mode: 'fullscreen' },
+  // 3 枚目: 実 CSV を Chrome 組み込み plain-text viewer で表示 (実出力、UI 装飾ゼロ)
+  { src: 'rich-csv-preview.png',          caption: 'Export CSV — opens in Excel, Google Sheets, or any reader.', mode: 'fullscreen' },
   // 4 枚目: 実 PDF (Pro) を Chromium PDF viewer で表示 (実出力)
-  { src: 'rich-pdf-preview.png',          caption: '',                                                    mode: 'asis' },
-  // 5 枚目: 課金モーダル
-  { src: '10-free-cap-upgrade.png',       caption: '$12.99 once. One purchase covers every CAT deployment.', mode: 'fullscreen' }
+  { src: 'rich-pdf-preview.png',          caption: 'Pro PDF report — subtotals by category and claim #.',        mode: 'fullscreen' },
+  // 5 枚目: 課金モーダル (撮影連番はシナリオ追加で変動するため、ワイルドカード相当の suffix で探す)
+  { src: 'free-cap-upgrade.png',          caption: '$12.99 once. One purchase covers every CAT deployment.',     mode: 'fullscreen' }
 ];
 
 const screenshotsDir = join(root, 'screenshots');
@@ -99,28 +97,23 @@ if (!existsSync(screenshotsDir)) {
   console.log('  先に WSL2 で `npm run e2e` を実行してスクショを取得してください。');
   console.log('  詳細は README.md の「E2E テスト」セクション参照。');
 } else {
+  // 撮影連番はシナリオ追加で前後にずれるため、suffix マッチで探す。
+  // 例: '04-rich-overview.png' でも 'NN-rich-overview.png' のどれでも拾える。
+  const allShots = readdirSync(screenshotsDir);
+  const findShot = (name) => {
+    if (existsSync(join(screenshotsDir, name))) return name;
+    const base = name.replace(/^\d+-/, '');
+    const candidates = allShots.filter((f) => f.endsWith(base) || f === base);
+    return candidates.sort().pop() || null;
+  };
   for (let i = 0; i < targets.length; i++) {
     const t = targets[i];
-    const srcPath = join(screenshotsDir, t.src);
-    if (!existsSync(srcPath)) {
-      console.log(`  ✗ skip: ${t.src} not found`);
+    const resolved = findShot(t.src);
+    if (!resolved) {
+      console.log(`  ✗ skip: ${t.src} not found (and no suffix match)`);
       continue;
     }
-
-    // 'asis' は既に 1280x800 として撮影されている画像 (CSV/PDF プレビュー)。
-    // caption は画像内に焼き込み済みなので SVG 合成しない。
-    if (t.mode === 'asis') {
-      const outBaseName = `screenshot-${i + 1}-1280x800`;
-      await sharp(srcPath).resize(1280, 800, { fit: 'cover' }).png()
-        .toFile(join(cwsScreensDir, `${outBaseName}.png`));
-      // SVG 版は <image> 1 個だけのシンプル構造で
-      const svgVersion = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 800">
-  <image xlink:href="${outBaseName}.png" x="0" y="0" width="1280" height="800"/>
-</svg>`;
-      writeFileSync(join(cwsScreensDir, `${outBaseName}.svg`), svgVersion);
-      console.log(`Generated screenshots/${outBaseName}.png + .svg (asis)`);
-      continue;
-    }
+    const srcPath = join(screenshotsDir, resolved);
 
     let popupBuffer;
     if (t.mode === 'fullscreen') {

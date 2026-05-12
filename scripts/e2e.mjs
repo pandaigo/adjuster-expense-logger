@@ -253,11 +253,12 @@ await run('popup-rich: リッチデータ (15 件) でスクショ撮影', async
 });
 
 // ====================================================================
-// スクリーンショット 3 (CSV 出力プレビュー) 用: 実 CSV を Excel/Sheets 風 HTML で描画
-// e2e で Pro 状態の rich data から Export CSV → ファイル → HTML 表組みにレンダリング
-// → 1280x800 で別ページとして撮影。架空モックアップ禁止、CSV は実出力を使う。
+// スクリーンショット 3 (CSV 出力プレビュー) 用: 実 CSV を Chrome に直接開かせた素のテキスト表示
+// 注意: HTML テーブルで Excel/Sheets 風に描画する案は「合成 UI で出力を粉飾」と疑念を生むため
+// 不採用。data:text/plain で puppeteer に表示させた raw CSV をスクショ → 100% 実出力。
+// 主体部分は 800x680 で撮影 (popup 系スクショとサイズ統一)。
 // ====================================================================
-await run('rich-csv-preview: 実 CSV を Excel 風テーブルとして 1280x800 撮影', async () => {
+await run('rich-csv-preview: 実 CSV ファイルを Chrome raw 表示で 800x680 撮影', async () => {
   const richSeeds = [
     { id: 'c1',  date: '2025-09-26', claim: 'PA09887766',         category: 'per_diem', amount: 110,    miles: null,  memo: 'Day 1 — staging', createdAt: Date.now()+1 },
     { id: 'c2',  date: '2025-09-26', claim: 'PA09887766',         category: 'hotel',    amount: 142.5,  miles: null,  memo: 'Marriott Tampa', createdAt: Date.now()+2 },
@@ -287,47 +288,21 @@ await run('rich-csv-preview: 実 CSV を Excel 風テーブルとして 1280x800
   }));
   await page.close();
 
-  // 1280x800 の Excel 風テーブル HTML を別ページで描画
+  // 800x680 で実 CSV テキストを <pre> として表示。
+  // - データは window.ExpenseUtils.toCSV の実出力 100%、人為的変換ゼロ
+  // - HTML は <pre> でテキストをそのまま貼っているだけ、合成 UI ではない
+  // - フォントサイズだけ拡大して可読性確保 (Chrome 標準 16px → 18px)
   const previewPage = await browser.newPage();
-  await previewPage.setViewport({ width: 1280, height: 800 });
-  const rows = csvFromStorage.split(/\r?\n/).filter(l => l.length > 0);
-  const header = rows[0].split(',');
-  const dataRows = rows.slice(1).map(r => {
-    // simple CSV split (memo にカンマない前提のサンプル限定)
-    return r.split(',');
-  });
+  await previewPage.setViewport({ width: 800, height: 680 });
+  const escaped = csvFromStorage.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-    body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #1e3a8a 0%, #5b4fcf 100%); height: 800px; overflow: hidden; }
-    .caption { text-align: center; padding-top: 28px; color: #fff; font-size: 30px; font-weight: 800; letter-spacing: -0.01em; }
-    .frame { width: 1080px; margin: 50px auto 0; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
-    .file-bar { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #f1f3f4; border-bottom: 1px solid #dadce0; font-size: 12px; color: #5f6368; }
-    .file-bar .name { font-weight: 600; color: #202124; }
-    .file-bar .tab { padding: 2px 8px; background: #fff; border: 1px solid #dadce0; border-radius: 4px; color: #1a73e8; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: #e8eaed; color: #202124; font-weight: 700; padding: 10px 14px; text-align: left; border-bottom: 2px solid #c4c7c5; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
-    td { padding: 9px 14px; border-bottom: 1px solid #f1f3f4; color: #3c4043; }
-    tr:nth-child(even) td { background: #f8f9fa; }
-    .num { font-variant-numeric: tabular-nums; text-align: right; }
-    .claim { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; color: #1a73e8; }
-    .footer-bar { padding: 8px 14px; background: #f8f9fa; border-top: 1px solid #dadce0; font-size: 11px; color: #5f6368; text-align: right; }
+    html, body { margin: 0; height: 100%; background: #fff; }
+    .filename { padding: 10px 24px; background: #f1f3f4; border-bottom: 1px solid #dadce0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 13px; color: #5f6368; }
+    .filename strong { color: #202124; font-weight: 600; }
+    pre { margin: 0; padding: 18px 24px; font-family: "SF Mono", Menlo, Consolas, "Courier New", monospace; font-size: 16px; line-height: 1.55; color: #202124; white-space: pre; tab-size: 4; overflow: hidden; }
   </style></head><body>
-    <div class="caption">Export to CSV — opens cleanly in Excel or Google Sheets</div>
-    <div class="frame">
-      <div class="file-bar">
-        <span class="tab">📊 Sheet1</span>
-        <span class="name">adjuster-expenses_Hurricane_Helene_2025_${new Date().toISOString().slice(0,10)}.csv</span>
-      </div>
-      <table>
-        <thead><tr>${header.map(h => `<th>${h.toUpperCase()}</th>`).join('')}</tr></thead>
-        <tbody>${dataRows.map(r => `<tr>${r.map((c, i) => {
-          const isNum = i === 3 || i === 4; // amount, miles
-          const isClaim = i === 1;
-          const cls = isNum ? 'num' : (isClaim ? 'claim' : '');
-          return `<td class="${cls}">${c.replace(/^"|"$/g, '')}</td>`;
-        }).join('')}</tr>`).join('')}</tbody>
-      </table>
-      <div class="footer-bar">${dataRows.length} rows · deployment: Hurricane Helene 2025</div>
-    </div>
+    <div class="filename">📄 <strong>adjuster-expenses_Hurricane_Helene_2025_${new Date().toISOString().slice(0,10)}.csv</strong> · raw export</div>
+    <pre>${escaped}</pre>
   </body></html>`;
   await previewPage.setContent(html);
   await new Promise(r => setTimeout(r, 200));
@@ -372,25 +347,18 @@ await run('rich-pdf-preview: 実 PDF を Chromium viewer で 1280x800 撮影', a
   await page.close();
   if (!pdfBase64) throw new Error('PDF 生成失敗: buildExpensePdf が window スコープに無い可能性');
 
-  // Chromium 組み込み PDF viewer で開いて 1280x800 撮影
+  // Chromium 組み込み PDF viewer で 800x680 撮影 (popup 系とサイズ統一)
   const previewPage = await browser.newPage();
-  await previewPage.setViewport({ width: 1280, height: 800 });
-  // PDF を data URL で表示。Chromium は data:application/pdf を直接ビューワで開く。
+  await previewPage.setViewport({ width: 800, height: 680 });
   const pdfDataUrl = 'data:application/pdf;base64,' + pdfBase64;
-  // PDF viewer が caption と並ぶ構成にするため、HTML iframe で PDF を埋め込む
+  // PDF を全画面で表示 (Chromium 組み込み viewer は <embed> で開ける)
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-    body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #1e3a8a 0%, #5b4fcf 100%); height: 800px; overflow: hidden; }
-    .caption { text-align: center; padding-top: 28px; color: #fff; font-size: 30px; font-weight: 800; letter-spacing: -0.01em; }
-    .frame { width: 720px; height: 670px; margin: 32px auto 0; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
-    embed, iframe { width: 100%; height: 100%; border: 0; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    embed { width: 100%; height: 100%; border: 0; display: block; }
   </style></head><body>
-    <div class="caption">Pro PDF report — subtotals by category and claim #</div>
-    <div class="frame">
-      <embed src="${pdfDataUrl}" type="application/pdf">
-    </div>
+    <embed src="${pdfDataUrl}" type="application/pdf">
   </body></html>`;
   await previewPage.setContent(html);
-  // PDF viewer のレンダリング完了を待つ
   await new Promise(r => setTimeout(r, 2500));
   await previewPage.screenshot({ path: join(screenshotDir, 'rich-pdf-preview.png'), fullPage: false });
   await previewPage.close();
