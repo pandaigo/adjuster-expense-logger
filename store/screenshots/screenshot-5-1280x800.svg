@@ -7,6 +7,6 @@
   </defs>
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg-5)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
-  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#fff">$12.99 once. Yours forever. No subscription.</text>
+  <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#fff">$12.99 once. One purchase covers every CAT deployment.</text>
   <image xlink:href="screenshot-5-1280x800-popup.png" x="252" y="110" width="777" height="680"/>
 </svg>

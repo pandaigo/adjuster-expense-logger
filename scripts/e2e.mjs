@@ -230,14 +230,18 @@ await run('popup-rich: リッチデータ (15 件) でスクショ撮影', async
   await shot(page, 'rich-deployment-modal');
   await page.click('#btn-deployment-cancel');
   await new Promise(r => setTimeout(r, 50));
-  // フィルタ後のスクショも撮る (PA09887766 で絞り込み、claim# 部分一致テストにもなる)
+  // スクリーンショット 2 (Filter 訴求) 用: Filter モーダルが「開いた状態」を撮る
+  // (Apply 後の閉じた画面では普通のリストと区別がつかない、というペルソナレビュー指摘)
   await page.click('#btn-filter');
   await page.waitForSelector('#filter-modal:not(.hidden)');
   await page.$eval('#flt-claim', (el, v) => { el.value = v; }, 'PA09887766');
+  await new Promise(r => setTimeout(r, 80));
+  await shot(page, 'rich-filter-modal-open');
+  // Filter Apply 後のスクショ (claim# 部分一致テスト兼用)
   await page.click('#btn-filter-apply');
   await new Promise(r => setTimeout(r, 80));
   await shot(page, 'rich-filtered-claim');
-  // Mileage カテゴリフィルタ shot (スクショ 4 用: IRS auto-calc の実数値が見える)
+  // Mileage カテゴリフィルタ shot (補助、IRS auto-calc 実数値が見える)
   await page.click('#btn-filter');
   await page.waitForSelector('#filter-modal:not(.hidden)');
   await page.$eval('#flt-claim', (el, v) => { el.value = v; }, '');
@@ -246,6 +250,150 @@ await run('popup-rich: リッチデータ (15 件) でスクショ撮影', async
   await new Promise(r => setTimeout(r, 80));
   await shot(page, 'rich-mileage-only');
   await page.close();
+});
+
+// ====================================================================
+// スクリーンショット 3 (CSV 出力プレビュー) 用: 実 CSV を Excel/Sheets 風 HTML で描画
+// e2e で Pro 状態の rich data から Export CSV → ファイル → HTML 表組みにレンダリング
+// → 1280x800 で別ページとして撮影。架空モックアップ禁止、CSV は実出力を使う。
+// ====================================================================
+await run('rich-csv-preview: 実 CSV を Excel 風テーブルとして 1280x800 撮影', async () => {
+  const richSeeds = [
+    { id: 'c1',  date: '2025-09-26', claim: 'PA09887766',         category: 'per_diem', amount: 110,    miles: null,  memo: 'Day 1 — staging', createdAt: Date.now()+1 },
+    { id: 'c2',  date: '2025-09-26', claim: 'PA09887766',         category: 'hotel',    amount: 142.5,  miles: null,  memo: 'Marriott Tampa', createdAt: Date.now()+2 },
+    { id: 'c3',  date: '2025-09-26', claim: 'PA09887766',         category: 'mileage',  amount: 67.86,  miles: 93.6,  memo: 'Site visit', createdAt: Date.now()+3 },
+    { id: 'c4',  date: '2025-09-27', claim: '23-014A789',         category: 'mileage',  amount: 95.14,  miles: 131.2, memo: 'Roof inspection', createdAt: Date.now()+4 },
+    { id: 'c5',  date: '2025-09-27', claim: '23-014A789',         category: 'meals',    amount: 32.45,  miles: null,  memo: 'Dinner with insured', createdAt: Date.now()+5 },
+    { id: 'c6',  date: '2025-09-28', claim: 'ALL-CAT-MIL-552134', category: 'per_diem', amount: 125,    miles: null,  memo: 'Day 3', createdAt: Date.now()+6 },
+    { id: 'c7',  date: '2025-09-28', claim: 'ALL-CAT-MIL-552134', category: 'hotel',    amount: 142.5,  miles: null,  memo: 'Marriott Tampa', createdAt: Date.now()+7 },
+    { id: 'c8',  date: '2025-09-29', claim: 'USAA-3892hnf',       category: 'mileage',  amount: 102.95, miles: 142.0, memo: 'Cross-county drive', createdAt: Date.now()+8 },
+  ];
+  const deployment = { name: 'Frank Riley', event: 'Hurricane Helene 2025', start: '2025-09-26', end: '2025-10-15' };
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true, expenses: richSeeds, deployment } });
+  // toCSV は popup の window.ExpenseUtils 経由で生成 (実出力)
+  const csvText = await page.evaluate(() => window.ExpenseUtils.toCSV(
+    window.ExpenseUtils.filterExpenses(
+      // storage から読まず、preload した state を使うのが楽。ExpenseUtils 経由でフィルタなし全件
+      Array.from(document.querySelectorAll('.expense-item')).length === 0 ? [] : null,
+      {}
+    ) || []
+  ));
+  // ↑ render 経由だと state.expenses は popup の中。直接取得する方が確実。
+  const csvFromStorage = await page.evaluate(() => new Promise(r => {
+    chrome.storage.local.get('expenses', d => {
+      const U = window.ExpenseUtils;
+      r(U.toCSV(d.expenses || []));
+    });
+  }));
+  await page.close();
+
+  // 1280x800 の Excel 風テーブル HTML を別ページで描画
+  const previewPage = await browser.newPage();
+  await previewPage.setViewport({ width: 1280, height: 800 });
+  const rows = csvFromStorage.split(/\r?\n/).filter(l => l.length > 0);
+  const header = rows[0].split(',');
+  const dataRows = rows.slice(1).map(r => {
+    // simple CSV split (memo にカンマない前提のサンプル限定)
+    return r.split(',');
+  });
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #1e3a8a 0%, #5b4fcf 100%); height: 800px; overflow: hidden; }
+    .caption { text-align: center; padding-top: 28px; color: #fff; font-size: 30px; font-weight: 800; letter-spacing: -0.01em; }
+    .frame { width: 1080px; margin: 50px auto 0; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+    .file-bar { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #f1f3f4; border-bottom: 1px solid #dadce0; font-size: 12px; color: #5f6368; }
+    .file-bar .name { font-weight: 600; color: #202124; }
+    .file-bar .tab { padding: 2px 8px; background: #fff; border: 1px solid #dadce0; border-radius: 4px; color: #1a73e8; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: #e8eaed; color: #202124; font-weight: 700; padding: 10px 14px; text-align: left; border-bottom: 2px solid #c4c7c5; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+    td { padding: 9px 14px; border-bottom: 1px solid #f1f3f4; color: #3c4043; }
+    tr:nth-child(even) td { background: #f8f9fa; }
+    .num { font-variant-numeric: tabular-nums; text-align: right; }
+    .claim { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; color: #1a73e8; }
+    .footer-bar { padding: 8px 14px; background: #f8f9fa; border-top: 1px solid #dadce0; font-size: 11px; color: #5f6368; text-align: right; }
+  </style></head><body>
+    <div class="caption">Export to CSV — opens cleanly in Excel or Google Sheets</div>
+    <div class="frame">
+      <div class="file-bar">
+        <span class="tab">📊 Sheet1</span>
+        <span class="name">adjuster-expenses_Hurricane_Helene_2025_${new Date().toISOString().slice(0,10)}.csv</span>
+      </div>
+      <table>
+        <thead><tr>${header.map(h => `<th>${h.toUpperCase()}</th>`).join('')}</tr></thead>
+        <tbody>${dataRows.map(r => `<tr>${r.map((c, i) => {
+          const isNum = i === 3 || i === 4; // amount, miles
+          const isClaim = i === 1;
+          const cls = isNum ? 'num' : (isClaim ? 'claim' : '');
+          return `<td class="${cls}">${c.replace(/^"|"$/g, '')}</td>`;
+        }).join('')}</tr>`).join('')}</tbody>
+      </table>
+      <div class="footer-bar">${dataRows.length} rows · deployment: Hurricane Helene 2025</div>
+    </div>
+  </body></html>`;
+  await previewPage.setContent(html);
+  await new Promise(r => setTimeout(r, 200));
+  await previewPage.screenshot({ path: join(screenshotDir, 'rich-csv-preview.png'), fullPage: false });
+  await previewPage.close();
+});
+
+// ====================================================================
+// スクリーンショット 4 (PDF 出力プレビュー) 用: 実生成 PDF を puppeteer の組み込み
+// PDF viewer で開いて 1280x800 撮影。pdf-lib で生成した PDF bytes を data URL で渡す。
+// ====================================================================
+await run('rich-pdf-preview: 実 PDF を Chromium viewer で 1280x800 撮影', async () => {
+  const richSeeds = [
+    { id: 'p1',  date: '2025-09-26', claim: 'PA09887766',         category: 'per_diem', amount: 110,    miles: null,  memo: 'Day 1 — staging', createdAt: Date.now()+1 },
+    { id: 'p2',  date: '2025-09-26', claim: 'PA09887766',         category: 'hotel',    amount: 142.5,  miles: null,  memo: 'Marriott Tampa', createdAt: Date.now()+2 },
+    { id: 'p3',  date: '2025-09-26', claim: 'PA09887766',         category: 'mileage',  amount: 67.86,  miles: 93.6,  memo: 'Site visit', createdAt: Date.now()+3 },
+    { id: 'p4',  date: '2025-09-27', claim: '23-014A789',         category: 'mileage',  amount: 95.14,  miles: 131.2, memo: 'Roof inspection', createdAt: Date.now()+4 },
+    { id: 'p5',  date: '2025-09-27', claim: '23-014A789',         category: 'meals',    amount: 32.45,  miles: null,  memo: 'Dinner with insured', createdAt: Date.now()+5 },
+    { id: 'p6',  date: '2025-09-28', claim: 'ALL-CAT-MIL-552134', category: 'per_diem', amount: 125,    miles: null,  memo: 'Day 3', createdAt: Date.now()+6 },
+    { id: 'p7',  date: '2025-09-28', claim: 'ALL-CAT-MIL-552134', category: 'hotel',    amount: 142.5,  miles: null,  memo: 'Marriott Tampa', createdAt: Date.now()+7 },
+    { id: 'p8',  date: '2025-09-29', claim: 'USAA-3892hnf',       category: 'mileage',  amount: 102.95, miles: 142.0, memo: 'Cross-county drive', createdAt: Date.now()+8 },
+  ];
+  const deployment = { name: 'Frank Riley', event: 'Hurricane Helene 2025', start: '2025-09-26', end: '2025-10-15' };
+  const page = await freshPopup(browser, extensionId, { preload: { isPaid: true, expenses: richSeeds, deployment } });
+  // popup.js の buildExpensePdf を直接呼んで PDF bytes (Uint8Array) を取得
+  const pdfBase64 = await page.evaluate(async () => {
+    // popup.js のグローバル関数 buildExpensePdf を呼ぶ
+    const filtered = window.ExpenseUtils.filterExpenses(
+      (await new Promise(r => chrome.storage.local.get('expenses', d => r(d.expenses || [])))),
+      {}
+    );
+    const dep = await new Promise(r => chrome.storage.local.get('deployment', d => r(d.deployment)));
+    const bytes = await window.buildExpensePdf({ deployment: dep, expenses: filtered.slice().sort((a,b)=>(a.date+a.id).localeCompare(b.date+b.id)) });
+    // bytes は Uint8Array
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.byteLength; i += chunkSize) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    return btoa(binary);
+  }).catch(e => { console.log('  [pdf gen error]', e.message); return null; });
+  await page.close();
+  if (!pdfBase64) throw new Error('PDF 生成失敗: buildExpensePdf が window スコープに無い可能性');
+
+  // Chromium 組み込み PDF viewer で開いて 1280x800 撮影
+  const previewPage = await browser.newPage();
+  await previewPage.setViewport({ width: 1280, height: 800 });
+  // PDF を data URL で表示。Chromium は data:application/pdf を直接ビューワで開く。
+  const pdfDataUrl = 'data:application/pdf;base64,' + pdfBase64;
+  // PDF viewer が caption と並ぶ構成にするため、HTML iframe で PDF を埋め込む
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #1e3a8a 0%, #5b4fcf 100%); height: 800px; overflow: hidden; }
+    .caption { text-align: center; padding-top: 28px; color: #fff; font-size: 30px; font-weight: 800; letter-spacing: -0.01em; }
+    .frame { width: 720px; height: 670px; margin: 32px auto 0; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+    embed, iframe { width: 100%; height: 100%; border: 0; }
+  </style></head><body>
+    <div class="caption">Pro PDF report — subtotals by category and claim #</div>
+    <div class="frame">
+      <embed src="${pdfDataUrl}" type="application/pdf">
+    </div>
+  </body></html>`;
+  await previewPage.setContent(html);
+  // PDF viewer のレンダリング完了を待つ
+  await new Promise(r => setTimeout(r, 2500));
+  await previewPage.screenshot({ path: join(screenshotDir, 'rich-pdf-preview.png'), fullPage: false });
+  await previewPage.close();
 });
 
 await run('popup-7: Filter で claim# 絞り込み', async () => {

@@ -487,6 +487,7 @@ function winAnsiSafe(s) {
     .replace(/[Ā-￿]/g, '?');
 }
 
+// e2e からも呼べるよう window に expose (CWS スクショで実 PDF を生成するため)
 async function buildExpensePdf({ deployment, expenses }) {
   const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
   const pdf = await PDFDocument.create();
@@ -705,4 +706,10 @@ function filename(ext) {
 function flash(el) {
   el.style.outline = '2px solid #dc2626';
   setTimeout(() => { el.style.outline = ''; }, 800);
+}
+
+// e2e (CWS スクショ生成) で実 PDF を生成するために buildExpensePdf を公開する。
+// 通常の popup 動作には影響しない。
+if (typeof window !== 'undefined') {
+  window.buildExpensePdf = buildExpensePdf;
 }
