@@ -3,7 +3,7 @@
   <rect x="0" y="0" width="1280" height="800" fill="url(#bg-5)"/>
   <rect x="0" y="0" width="1280" height="100" fill="#000" opacity="0.25"/>
   <text x="640" y="62" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#fff">$12.99 once. One purchase covers every CAT deployment.</text>
-  <image xlink:href="screenshot-5-1280x800-popup.png" x="80" y="114" width="460" height="652"/>
+  <image xlink:href="screenshot-5-1280x800-popup.png" x="80" y="137" width="520" height="607"/>
   
   <circle cx="640" cy="194" r="6" fill="#FCD34D"/>
   <text x="660" y="200" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" letter-spacing="-0.2">No subscription</text>

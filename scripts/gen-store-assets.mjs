@@ -23,43 +23,30 @@ mkdirSync(cwsScreensDir, { recursive: true });
 // プロモタイル 440x280
 // TODO: 拡張ごとにヘッドライン・差し色・サブコピーを編集
 // ============================================================
-// 設計指針 (3 ペルソナレビュー 2026-05-13 採用案 = 黄色ハイビズ警告サイン):
-// - CWS 検索結果一覧で青系競合 (Hurdlr / TripLog / Stride / MileIQ) と完全に異質な配色で視線奪取
-// - 黄黒コントラスト比 19:1 で focal point を $0.725/mile (IRS 標準レート) に集中
-// - 上下の黒帯 = 工事現場テープ / ハリケーン被害区域マーカー = IA 現場の業界記号
-// - "BUILT FOR CAT DEPLOYMENT" で「業界の人が作った」と Brenda が 0.5 秒で判断
+// 設計指針 (Option 2: 軽い間引き、3 ペルソナ過剰チェック 2026-05-13 反映):
+// 前案 (黄色ハイビズフル) は Marcus 7.5/10、Tom 6/10 で「装飾過多」判定。
+// 削除: 警告三角 ⚠ (黄黒で既に警告色なので冗長) / claim# 回転スタンプ (チープ印象の元凶) /
+//       チップを 5 → 3 に削減 (情報重複)
+// 維持: $0.725 ヒーロー数字、上下黒帯、"NO SUBSCRIPTION" コピー (3 シグナルは保持)
 const promoSmallSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280">
   <rect width="440" height="280" fill="#FFD60A"/>
 
   <!-- 上下の黒ストライプ (工事現場テープ風) -->
-  <rect x="0" y="0" width="440" height="26" fill="#0A0A0A"/>
-  <rect x="0" y="254" width="440" height="26" fill="#0A0A0A"/>
-  <text x="22" y="18" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="900" fill="#FFD60A" letter-spacing="2.5">ADJUSTER EXPENSE LOG</text>
-  <text x="22" y="272" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#FFD60A" letter-spacing="1.2">BUILT FOR CAT DEPLOYMENT · NO SUBSCRIPTION</text>
+  <rect x="0" y="0" width="440" height="32" fill="#0A0A0A"/>
+  <rect x="0" y="248" width="440" height="32" fill="#0A0A0A"/>
+  <text x="220" y="22" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900" fill="#FFD60A" letter-spacing="3">ADJUSTER EXPENSE LOG</text>
+  <text x="220" y="269" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFD60A" letter-spacing="2">BUILT FOR CAT DEPLOYMENT · NO SUBSCRIPTION</text>
 
-  <!-- 巨大数字 (IRS rate ヒーロー、focal point) -->
-  <text x="22" y="120" font-family="Inter, Arial, sans-serif" font-size="78" font-weight="900" fill="#0A0A0A" letter-spacing="-3">$0.725</text>
-  <text x="22" y="148" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#0A0A0A" letter-spacing="0.5">/ mile · auto-calc</text>
+  <!-- 巨大数字 (IRS rate ヒーロー、focal point を 1 つに集約) -->
+  <text x="32" y="135" font-family="Inter, Arial, sans-serif" font-size="78" font-weight="900" fill="#0A0A0A" letter-spacing="-3">$0.725</text>
+  <text x="34" y="165" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#0A0A0A" letter-spacing="0.3">/ mile · auto-calc · IRS 2026</text>
 
-  <!-- 警告三角 (CAT 業界メタファー) -->
-  <polygon points="370,68 410,68 390,34" fill="#0A0A0A"/>
-  <text x="390" y="62" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900" fill="#FFD60A" text-anchor="middle">!</text>
-
-  <!-- カテゴリチップ (黒バー + 黄文字) -->
+  <!-- カテゴリチップ 3 つだけ (情報密度と簡潔さのバランス) -->
   <g font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#FFD60A">
-    <rect x="22" y="180" width="86" height="26" fill="#0A0A0A" rx="3"/><text x="65" y="198" text-anchor="middle">PER DIEM</text>
-    <rect x="116" y="180" width="62" height="26" fill="#0A0A0A" rx="3"/><text x="147" y="198" text-anchor="middle">HOTEL</text>
-    <rect x="186" y="180" width="80" height="26" fill="#0A0A0A" rx="3"/><text x="226" y="198" text-anchor="middle">MILEAGE</text>
-    <rect x="22" y="214" width="76" height="26" fill="#0A0A0A" rx="3"/><text x="60" y="232" text-anchor="middle">MEALS</text>
-    <rect x="106" y="214" width="160" height="26" fill="#0A0A0A" rx="3"/><text x="186" y="232" text-anchor="middle">CLAIM # TAGGED</text>
-  </g>
-
-  <!-- 右側: claim# スタンプ風 (CAT 派遣感を強化) -->
-  <g transform="translate(310,166) rotate(-8)">
-    <rect x="0" y="0" width="120" height="68" fill="none" stroke="#0A0A0A" stroke-width="3" rx="4"/>
-    <text x="60" y="26" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="800" fill="#0A0A0A" text-anchor="middle" letter-spacing="1.5">CLAIM #</text>
-    <text x="60" y="52" font-family="Courier New, monospace" font-size="20" font-weight="900" fill="#0A0A0A" text-anchor="middle">CAT-2026</text>
+    <rect x="32" y="195" width="100" height="30" rx="4" fill="#0A0A0A"/><text x="82" y="215" text-anchor="middle">PER DIEM</text>
+    <rect x="140" y="195" width="100" height="30" rx="4" fill="#0A0A0A"/><text x="190" y="215" text-anchor="middle">MILEAGE</text>
+    <rect x="248" y="195" width="160" height="30" rx="4" fill="#0A0A0A"/><text x="328" y="215" text-anchor="middle">CLAIM # TAGGED</text>
   </g>
 </svg>`;
 
@@ -149,13 +136,15 @@ if (!existsSync(screenshotsDir)) {
 
     // 'popup-callout': 左に popup を縦長で配置 + 右半分にベネフィットコールアウト
     if (t.mode === 'popup-callout') {
-      // 元画像 800x680 のうち popup 本体は左上 ~480x680。右側の空白を切り捨てる。
+      // 元画像 800x700 のうち、popup body は left 380px だが modal は viewport 中央
+      // (left 240..560 = 320px wide) に表示されるため、crop は 600px 確保して
+      // modal の右端まで含める。popup body と modal の両方が収まる横幅。
       const meta = await sharp(srcPath).metadata();
-      const cw = Math.min(480, meta.width || 480);
-      const ch = Math.min(680, meta.height || 680);
+      const cw = Math.min(600, meta.width || 600);
+      const ch = Math.min(700, meta.height || 700);
       const popupBuf = await sharp(srcPath)
         .extract({ left: 0, top: 0, width: cw, height: ch })
-        .resize({ width: 460 })
+        .resize({ width: 520 })
         .png()
         .toBuffer();
       const popupMeta = await sharp(popupBuf).metadata();
